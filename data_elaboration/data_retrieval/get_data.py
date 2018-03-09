@@ -1,6 +1,7 @@
 import requests
 import json
 
+
 def getData(endpoint):
     response = requests.get(endpoint)
     dataJson = response.json()
