@@ -19,36 +19,37 @@ class User:
 
 
 def create_roba_classi():
-    lista: List[User] = []
+    dick = dict()
     for i in range(0, 150000):
         repo_list = []
         for j in range(0, 100):
             repo_list.append(Repo("stocazzo", 420))
-        lista.append(User("stograndissimocazzo", repo_list))
-    return lista
+        dick[i] = repo_list
+    return dick
+
 
 def create_roba_dic():
-    lista: List[Dict] = []
+    dick = dict()
     for i in range(0, 150000):
         repo_list = []
         for j in range(0, 100):
             repo_list.append({"name": "stocazzo", "commits": 420})
-        lista.append({"name": "stogasaodcj", "repo": repo_list})
-    return lista
+        dick[i] = repo_list
+    return dick
 
 
 def printamilaroba_classi(roba):
-    for elem in roba:
-        print(elem.name)
-        print(elem.repos[0].name)
+    for i, elem in enumerate(roba):
+        print(roba[i])
+        print(roba[i][0].name)
 
 def printaasdf(roba):
-    for elem in roba:
-        print(elem['name'])
-        print(elem['repo'][0]['name'])
+    for i, elem in enumerate(roba):
+        print(roba[i])
+        print(roba[i][0]['name'])
 
 
 
 if __name__ == "__main__":
-    roba = create_roba_dic()
-    printaasdf(roba)
+    roba = create_roba_classi()
+    printamilaroba_classi(roba)

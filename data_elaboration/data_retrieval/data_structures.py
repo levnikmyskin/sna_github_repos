@@ -1,12 +1,8 @@
 
 
 class Repo:
-    __slots__ = ["name", "commits", "language"]
+    __slots__ = ["name", "commits"]
 
-    def __int__(self, name: str, commits: int, language: str ):
+    def __init__(self, name: str, commits: int):
         self.name = name
         self.commits = commits
-        self.language = language
-
-
-
