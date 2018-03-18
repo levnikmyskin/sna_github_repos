@@ -6,6 +6,7 @@ from data_elaboration.data_retrieval.data_structures import Repo
 
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 user_dict = dict()
+visited_user = list()
 
 
 def get_contributor_info(contributor_dic: Dict):
@@ -22,15 +23,18 @@ def get_data(owner, repo):
             data_list.append(get_contributor_info(data_json[i]))
     else:
         for elem in data_json:
-            data_list.append(elem)
+            data_list.append(get_contributor_info(elem))
+            # data_list.append(elem)
     return data_list
 
 
 def get_user_repos(repos_url):
     repos = requests.get(repos_url).json()
-    for repo in repos:
-        data = get_data(repo['owner']['login'], repo['name'])
-        run_from_data(data, repo['name'])
+    if len(user_dict) < 5:
+        for repo in repos:
+            data = get_data(repo['owner']['login'], repo['name'])
+            run_from_data(data, repo['name'])
+            print(user_dict)
 
 
 def run_from_data(data, repo_name):
@@ -44,6 +48,7 @@ def run_from_data(data, repo_name):
 def main():
     data = get_data("torvalds", "linux")
     run_from_data(data, "linux")
+    print(user_dict)
 
 
 main()
