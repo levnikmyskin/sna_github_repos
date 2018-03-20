@@ -7,7 +7,7 @@ from pprint import pprint
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
 user_dict = dict()
-visited_user = list()
+visited_repos = set()
 headers_sna = {'socialNetworkAnalysis': 'XTfLGSS3'}
 t = 2
 
@@ -21,38 +21,52 @@ class Repo:
         self.language = language
 
 
-def get_data(owner, repo):
-    # threading.Timer(5.0, get_user_repos).start()
+class CustomJsonEncoder(json.JSONEncoder):
+
+    def __init__(self):
+        super(CustomJsonEncoder, self).__init__()
+
+    def default(self, o):
+        if type(o) == Repo:
+            pass
+        else:
+            super(CustomJsonEncoder, self).default(o)
+
+
+def get_repo_contributors(owner, repo):
+    if repo in visited_repos:
+        return
     response = requests.get(CONTRIBUTORS_ENDPOINT.format(owner, repo), headers=headers_sna)
     print(response)
     data_json = response.json()
-    data_list = []
+    user_list = list()
 
     if len(data_json) > 5:
         for i in range(len(data_json) - 5, len(data_json)):
-            data_list.append(get_contributor_info(data_json[i]))
+            user_list.append(get_contributor_info(data_json[i]))
     else:
         for elem in data_json:
-            data_list.append(get_contributor_info(elem))
-    return data_list
+            user_list.append(get_contributor_info(elem))
+
+    visited_repos.add(repo)
+    return user_list
 
 
 # devo riuscire a prendere le repo dell'utente, restituirla e per ogni repo vedere i primi 5 contributors.
 def get_user_repos(user):
-    # threading.Timer(5.0, get_user_repos).start()
     response = requests.get(REPOS_ENDPOINT.format(user), headers=headers_sna)
     print(response)
     repos_json = response.json()
-    data_list = []
+    repo_list = list()
 
     for elem in repos_json:
-        data_list.append(get_repos_info(elem))
+        repo_list.append(get_repos_info(elem))
 
-    return data_list
+    return repo_list
 
 
 def get_contributor_info(contributor_dic: Dict):
-    return contributor_dic["author"]["login"], contributor_dic["total"], contributor_dic["author"]["repos_url"]
+    return contributor_dic["author"]["login"], contributor_dic["total"]
 
 
 def get_repos_info(repos_dic: Dict):
@@ -72,9 +86,9 @@ def save_data(data, file):
 
 
 def main():
-    # data = get_data("torvalds", "linux")
-    # save_data(data, "salvo_da_funzione.json")
-    data = json.load(open("salvo_da_funzione.json", "r"))
+    data = get_repo_contributors("torvalds", "linux",)
+    save_data(data, "salvo_da_funzione.json")
+    # data = json.load(open("salvo_da_funzione.json", "r"))
 
     # DEPTH 0 - i primi 5 contributors della repo di partenza(linux)
     run_from_data(data, "linux", "C")
@@ -82,14 +96,14 @@ def main():
     # DEPTH 1 - i primi 5 contributors di ogni repo che appartiene ai 5 users selezionati a DEPTH 0 (/depth precedente)
     # gli user sono quelli presenti nel dizionario user_dict, quindi per ogni user nel dizionario chiamo get_user_repo
     # per ogni repo, chiamo run_from_data.
-    for user in user_dict.copy():
-        # se user non è in visited user allora procedi/else continue
-        # if user not in visited_user:
+    # TODO possibilità di controllare la depth della funzione
+    # TODO verificare non esistenza problemi con repo vuote o con autore singolo
+    _user_dict_copy = user_dict.copy()
+    for user in _user_dict_copy:
         print(user)
         repos_data = get_user_repos(user)
-        visited_user.append(user)
         for repo in repos_data:
-            data = get_data(user, repo[0])
+            data = get_repo_contributors(user, repo[0])
             # Timer di attesa t per richiesta API github
             time.sleep(t)
             run_from_data(data, repo[0], repo[1])
