@@ -3,6 +3,7 @@ import requests
 import json
 import time
 from pprint import pprint
+from data_elaboration.data_retrieval.data_structures import Repo, CustomJsonEncoder
 
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
@@ -10,27 +11,6 @@ user_dict = dict()
 visited_repos = set()
 headers_sna = {'socialNetworkAnalysis': 'XTfLGSS3'}
 t = 2
-
-
-class Repo:
-    __slots__ = ["name", "commits", "language"]
-
-    def __init__(self, name: str, commits: int, language: str):
-        self.name = name
-        self.commits = commits
-        self.language = language
-
-
-class CustomJsonEncoder(json.JSONEncoder):
-
-    def __init__(self):
-        super(CustomJsonEncoder, self).__init__()
-
-    def default(self, o):
-        if type(o) == Repo:
-            pass
-        else:
-            super(CustomJsonEncoder, self).default(o)
 
 
 def get_repo_contributors(owner, repo):
