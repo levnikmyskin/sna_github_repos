@@ -68,7 +68,7 @@ def run_from_data(data, repo_name, language):
 
 
 def save_data(data, file):
-    json.dump(data, open(file, "w"))
+    json.dump(data, open(file, "w"), cls=CustomJsonEncoder)
 
 
 def analyze_to_depth(desired_depth):
@@ -84,6 +84,7 @@ def analyze_to_depth(desired_depth):
                 # chiamo funzione run_from_data che inserisce utenti/oggetti Repo in user_dict
                 run_from_data(contributors_data, repo[0], repo[1])
                 pprint(user_dict)
+                save_data(user_dict, "risutlati_crawler_primo.json")
 
 
 def main():

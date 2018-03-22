@@ -22,9 +22,7 @@ class CustomJsonEncoder(JSONEncoder):
     def __init__(self, *args, skipkeys=False, ensure_ascii=True,
                  check_circular=True, allow_nan=True, sort_keys=False,
                  indent=None, separators=None, default=None):
-        super(CustomJsonEncoder, self).__init__(*args, skipkeys, ensure_ascii,
-                                                check_circular, allow_nan, sort_keys,
-                                                indent, separators, default)
+        super(CustomJsonEncoder, self).__init__(*args)
 
     def default(self, o):
         if type(o) == Repo:
