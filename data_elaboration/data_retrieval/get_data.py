@@ -10,11 +10,14 @@ REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
 user_dict = dict()
 visited_repos = set()
 headers_sna = {'socialNetworkAnalysis': 'XTfLGSS3'}
-t = 5
+t = 10
 depth = 1
+
 
 # ottengo lista contributors della repository in analisi e rispettivi commits (passata come argomento)
 def get_repo_contributors(owner, repo):
+    # Timer di attesa t per richiesta API github
+    time.sleep(t)
     if repo in visited_repos:
         return
     response = requests.get(CONTRIBUTORS_ENDPOINT.format(owner, repo), headers=headers_sna)
@@ -39,6 +42,8 @@ def get_contributor_info(contributor_dic: Dict):
 
 # ottengo nome_repo, lang_repo
 def get_user_repos(user):
+    # Timer di attesa t per richiesta API github
+    time.sleep(t)
     response = requests.get(REPOS_ENDPOINT.format(user), headers=headers_sna)
     print(response)
     repos_json = response.json()
@@ -66,33 +71,6 @@ def save_data(data, file):
     json.dump(data, open(file, "w"))
 
 
-def main():
-    data = get_repo_contributors("torvalds", "linux",)
-    save_data(data, "salvo_da_funzione.json")
-    # data = json.load(open("salvo_da_funzione.json", "r"))
-
-    # DEPTH 0 - i primi 5 contributors della repo di partenza(linux)
-    run_from_data(data, "linux", "C")
-    analyze_to_depth(depth)
-
-    # DEPTH 1 - i primi 5 contributors di ogni repo che appartiene ai 5 users selezionati a DEPTH 0 (/depth precedente)
-    # gli user sono quelli presenti nel dizionario user_dict, quindi per ogni user nel dizionario chiamo get_user_repo
-    # per ogni repo, chiamo run_from_data.
-    # TODO verificare non esistenza problemi con repo vuote o con autore singolo
-    # _user_dict_copy = user_dict.copy()
-    # for user in _user_dict_copy:
-    #     print(user)
-    #     repos_data = get_user_repos(user)
-    #     for repo in repos_data:
-    #         data = get_repo_contributors(user, repo[0])
-    #         # Timer di attesa t per richiesta API github
-    #         time.sleep(t)
-    #         run_from_data(data, repo[0], repo[1])
-    #     print(len(user_dict))
-    #     pprint(user_dict)
-    # save_data(user_dict, "test_crawler.json")
-
-
 def analyze_to_depth(desired_depth):
     for x in range(desired_depth):
         _user_dict_copy = user_dict.copy()
@@ -103,11 +81,21 @@ def analyze_to_depth(desired_depth):
             for repo in repos_data:
                 # per la repo in analisi, ottengo lista contributors
                 contributors_data = get_repo_contributors(user, repo[0])
-                # Timer di attesa t per richiesta API github
-                time.sleep(t)
                 # chiamo funzione run_from_data che inserisce utenti/oggetti Repo in user_dict
                 run_from_data(contributors_data, repo[0], repo[1])
-        pprint(user_dict)
+                pprint(user_dict)
+
+
+def main():
+    data = get_repo_contributors("torvalds", "linux",)
+    # save_data(data, "salvo_da_funzione.json")
+    # data = json.load(open("salvo_da_funzione.json", "r"))
+
+    run_from_data(data, "linux", "C")
+    analyze_to_depth(depth)
+    save_data(user_dict, "risutlati_crawler_primo.json")
+
+# TODO verificare non esistenza problemi con repo vuote o con autore singolo
 
 
 main()
