@@ -9,19 +9,20 @@ CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
 user_dict = dict()
 visited_repos = set()
-headers_sna = {'socialNetworkAnalysis': 'XTfLGSS3'}
-t = 10
-depth = 1
+visited_user = set()
+t = 0
+depth = 2
 
 
 # ottengo lista contributors della repository in analisi e rispettivi commits (passata come argomento)
 def get_repo_contributors(owner, repo):
     # Timer di attesa t per richiesta API github
     time.sleep(t)
-    if repo in visited_repos:
-        return
-    response = requests.get(CONTRIBUTORS_ENDPOINT.format(owner, repo), headers=headers_sna)
+    response = requests.get(CONTRIBUTORS_ENDPOINT.format(owner, repo), auth=('socialNetworkAnalysis', 'XTfLGSS3'))
     print(response)
+    # manage 204 HTTP response returning None value
+    if response.status_code == 204:
+        return
     data_json = response.json()
     user_list = list()
 
@@ -44,7 +45,7 @@ def get_contributor_info(contributor_dic: Dict):
 def get_user_repos(user):
     # Timer di attesa t per richiesta API github
     time.sleep(t)
-    response = requests.get(REPOS_ENDPOINT.format(user), headers=headers_sna)
+    response = requests.get(REPOS_ENDPOINT.format(user), auth=('socialNetworkAnalysis', 'XTfLGSS3'))
     print(response)
     repos_json = response.json()
     repo_list = list()
@@ -60,6 +61,8 @@ def get_repos_info(repos_dic: Dict):
 
 
 def run_from_data(data, repo_name, language):
+    if data is None:
+        return
     for user in data:
         username = user[0]
         # The method setdefault() is similar to get(), but will set dict[key]=default if key is not already in dict.
@@ -76,15 +79,24 @@ def analyze_to_depth(desired_depth):
         _user_dict_copy = user_dict.copy()
         # individuo in user_dict gli utenti di partenza dell'analisi
         for user in _user_dict_copy:
+            print(user)
             # per l'utente in analisi, ottengo lista delle sue repository
             repos_data = get_user_repos(user)
             for repo in repos_data:
+                if repo in visited_repos:
+                    continue
                 # per la repo in analisi, ottengo lista contributors
                 contributors_data = get_repo_contributors(user, repo[0])
                 # chiamo funzione run_from_data che inserisce utenti/oggetti Repo in user_dict
                 run_from_data(contributors_data, repo[0], repo[1])
-                pprint(user_dict)
-                save_data(user_dict, "risutlati_crawler_primo.json")
+
+
+def analyze_specific_user(user):
+    repos_data = get_user_repos(user)
+    for repo in repos_data:
+        print(repo[0])
+        contributors_data = get_repo_contributors(user, repo[0])
+        run_from_data(contributors_data, repo[0], repo[1])
 
 
 def main():
@@ -94,7 +106,8 @@ def main():
 
     run_from_data(data, "linux", "C")
     analyze_to_depth(depth)
-    save_data(user_dict, "risutlati_crawler_primo.json")
+    save_data(user_dict, "depth2.json")
+
 
 # TODO verificare non esistenza problemi con repo vuote o con autore singolo
 
