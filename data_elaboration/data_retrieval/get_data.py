@@ -109,8 +109,5 @@ def main():
     save_data(user_dict, "depth2.json")
 
 
-# TODO verificare non esistenza problemi con repo vuote o con autore singolo
-
-
 main()
 
