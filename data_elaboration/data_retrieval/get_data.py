@@ -7,11 +7,11 @@ from data_elaboration.data_retrieval.data_structures import Repo, CustomJsonEnco
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
 user_dict = dict()
-visited_repos = set("linux")
+visited_repos = set()
 # For requests using Basic Authentication or OAuth, you can make up to 5000 requests per hour.
 # t_min = 5000/(60*60) = 1.38s
 t = 2
-depth = 3
+depth = 2
 
 
 # ottengo lista contributors della repository in analisi e rispettivi commits (passata come argomento)
@@ -83,7 +83,7 @@ def analyze_to_depth(desired_depth):
             # per l'utente in analisi, ottengo lista delle sue repository
             repos_data = get_user_repos(user)
             for repo in repos_data:
-                print(repo)
+                print("Analyzing repo: {}".format(repo[0]))
                 if repo in visited_repos:
                     continue
                 # per la repo in analisi, ottengo lista contributors
@@ -108,7 +108,7 @@ def main():
 
     run_from_data(data, "linux", "C")
     analyze_to_depth(depth)
-    save_data(user_dict, "depth3_no_linux.json")
+    save_data(user_dict, "depth2.json")
 
 
 main()
