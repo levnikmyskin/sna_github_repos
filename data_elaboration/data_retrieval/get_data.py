@@ -7,7 +7,7 @@ from data_elaboration.data_retrieval.data_structures import Repo, CustomJsonEnco
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
 user_dict = dict()
-visited_repos = set()
+visited_repos = set("linux")
 # For requests using Basic Authentication or OAuth, you can make up to 5000 requests per hour.
 # t_min = 5000/(60*60) = 1.38s
 t = 2
