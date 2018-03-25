@@ -1,5 +1,6 @@
 import json
 import networkx as nx
+from networkx.algorithms import bipartite
 import matplotlib.pyplot as plt
 
 G = nx.Graph()
@@ -22,8 +23,8 @@ def get_set_v(data, set_u):
 
 
 def setup_nodes(graph, set_user, set_repo):
-    graph.add_nodes_from(set_user)
-    graph.add_nodes_from(set_repo)
+    graph.add_nodes_from(set_user, bipartite=0)
+    graph.add_nodes_from(set_repo, bipartite=1)
 
 
 def setup_edges(data, graph, set_user, set_repos):
@@ -31,12 +32,14 @@ def setup_edges(data, graph, set_user, set_repos):
         for repo in set_repos:
             for elem in data[user]:
                 if repo in elem:
-                    edge = (user, repo)
-                    graph.add_edge(*edge)
+                    # edge = (user, repo)
+                    graph.add_edges_from([(user, repo)])
+                    # graph.add_edge(*edge)
 
 
 def draw_graph(graph):
-    nx.draw(graph, with_labels=True, font_weight='bold')
+    nx.draw_spectral(G, with_labels=True)
+    # nx.draw(graph, with_labels=True, font_weight='bold')
     # plt.subplot(122)
     # nx.draw_shell(graph, with_labels=True, font_weight='bold')
 
