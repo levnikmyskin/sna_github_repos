@@ -38,7 +38,7 @@ def setup_edges(data, graph, set_user, set_repos):
 
 
 def draw_graph(graph):
-    nx.draw_spectral(G, with_labels=True)
+    nx.draw(graph, with_labels=True)
     # nx.draw(graph, with_labels=True, font_weight='bold')
     # plt.subplot(122)
     # nx.draw_shell(graph, with_labels=True, font_weight='bold')
