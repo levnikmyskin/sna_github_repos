@@ -96,16 +96,12 @@ def analyze_to_depth(desired_depth):
 def analyze_specific_user(user):
     repos_data = get_user_repos(user)
     for repo in repos_data:
-        # print(repo[0])
         contributors_data = get_repo_contributors(user, repo[0])
         run_from_data(contributors_data, repo[0], repo[1])
 
 
 def main():
     data = get_repo_contributors("torvalds", "linux",)
-    # save_data(data, "salvo_da_funzione.json")
-    # data = json.load(open("salvo_da_funzione.json", "r"))
-
     run_from_data(data, "linux", "C")
     analyze_to_depth(depth)
     save_data(user_dict, "depth2.json")
