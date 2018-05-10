@@ -7,7 +7,7 @@ from data_elaboration.data_retrieval.data_structures import Repo, CustomJsonEnco
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
 user_dict = dict()
-visited_repos = set("linux")
+visited_repos = set()
 # For requests using Basic Authentication or OAuth, you can make up to 5000 requests per hour.
 # t_min = 5000/(60*60) = 1.38s
 t = 2
@@ -16,24 +16,28 @@ depth = 2
 
 # ottengo lista contributors della repository in analisi e rispettivi commits (passata come argomento)
 def get_repo_contributors(owner, repo):
+    if repo in visited_repos:
+        return
     # Timer di attesa t per richiesta API github
     time.sleep(t)
     response = requests.get(CONTRIBUTORS_ENDPOINT.format(owner, repo), auth=('socialNetworkAnalysis', 'XTfLGSS3'))
-    print(response)
     # manage 204 HTTP response returning None value
     if response.status_code == 204:
         return
     data_json = response.json()
-    user_list = list()
 
+    visited_repos.add(repo)
+    return get_first_five_contributors(data_json)
+
+
+def get_first_five_contributors(data_json):
+    user_list = list()
     if len(data_json) > 5:
         for i in range(len(data_json) - 5, len(data_json)):
             user_list.append(get_contributor_info(data_json[i]))
     else:
         for elem in data_json:
             user_list.append(get_contributor_info(elem))
-
-    visited_repos.add(repo)
     return user_list
 
 
@@ -84,8 +88,6 @@ def analyze_to_depth(desired_depth):
             repos_data = get_user_repos(user)
             for repo in repos_data:
                 print("Analyzing repo: {}".format(repo[0]))
-                if repo in visited_repos:
-                    continue
                 # per la repo in analisi, ottengo lista contributors
                 contributors_data = get_repo_contributors(user, repo[0])
                 # chiamo funzione run_from_data che inserisce utenti/oggetti Repo in user_dict
