@@ -12,7 +12,6 @@ visited_repos = set()
 queue = deque()
 # For requests using Basic Authentication or OAuth, you can make up to 5000 requests per hour.
 # t_min = 5000/(60*60) = 1.38s
-t = 2
 
 _loggedDataContributors = list()
 _loggedDataRepos = list()
@@ -22,18 +21,18 @@ _loggedDataRepos = list()
 def get_repo_contributors(owner, repo):
     if repo in visited_repos:
         return
-    # Timer di attesa t per richiesta API github
-    time.sleep(t)
+    # Timer di attesa per richiesta API github
+    time.sleep(2)
     response = requests.get(CONTRIBUTORS_ENDPOINT.format(owner, repo), auth=('socialNetworkAnalysis', 'XTfLGSS3'))
     # manage 204 HTTP response returning None value
     if response.status_code == 204:
         return
-    data_json = response.json()
+    repo_contributors = response.json()
     # TODO rimuovi qui
-    _loggedDataContributors.append(data_json)
+    _loggedDataContributors.append(repo_contributors)
 
     visited_repos.add(repo)
-    return get_first_five_contributors(data_json)
+    return repo_contributors
 
 
 def get_first_five_contributors(repo_contributors):
@@ -54,7 +53,6 @@ def get_contributor_info(contributor_dic: Dict):
 # ottengo nome_repo, lang_repo
 def get_user_repos(user):
     # Timer di attesa t per richiesta API github
-    time.sleep(t)
     response = requests.get(REPOS_ENDPOINT.format(user), auth=('socialNetworkAnalysis', 'XTfLGSS3'))
     print(response)
     repos_json = response.json()
@@ -86,7 +84,6 @@ def run_from_data(five_contributors, repo_name, language):
 
         # user repos will be downloaded from the queue
         queue.append(username)
-        return queue
 
 
 def save_data(data, file):
@@ -128,10 +125,11 @@ def init_crawler():
 
 def main():
     init_five_contributors = init_crawler()
-    user_queue = run_from_data(init_five_contributors, "linux", "C")
+    run_from_data(init_five_contributors, "linux", "C")
 
-    save_user_queue_contributors(user_queue)
-    save_user_queue_contributors(user_queue)
+    save_user_queue_contributors(queue)
+    save_user_queue_contributors(queue)
+
     save_data(user_dict, "depth2.json")
 
 
