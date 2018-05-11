@@ -13,7 +13,6 @@ queue = deque()
 # For requests using Basic Authentication or OAuth, you can make up to 5000 requests per hour.
 # t_min = 5000/(60*60) = 1.38s
 t = 2
-depth = 2
 
 _loggedDataContributors = list()
 _loggedDataRepos = list()
@@ -37,13 +36,13 @@ def get_repo_contributors(owner, repo):
     return get_first_five_contributors(data_json)
 
 
-def get_first_five_contributors(data_json):
+def get_first_five_contributors(repo_contributors):
     user_list = list()
-    if len(data_json) > 5:
-        for i in range(len(data_json) - 5, len(data_json)):
-            user_list.append(get_contributor_info(data_json[i]))
+    if len(repo_contributors) > 5:
+        for i in range(len(repo_contributors) - 5, len(repo_contributors)):
+            user_list.append(get_contributor_info(repo_contributors[i]))
     else:
-        for elem in data_json:
+        for elem in repo_contributors:
             user_list.append(get_contributor_info(elem))
     return user_list
 
@@ -74,28 +73,31 @@ def get_repos_info(repos_dic: Dict):
     return repos_dic['name'], repos_dic['language']
 
 
-def run_from_data(data, repo_name, language):
-    if data is None:
+# five_contributors: The first five contributors of a repo
+def run_from_data(five_contributors, repo_name, language):
+    if five_contributors is None:
         return
-    for user in data:
+    for user in five_contributors:
         username = user[0]
         # The method setdefault() is similar to get(), but will set dict[key]=default if key is not already in dict.
         repos = user_dict.setdefault(username, [])
         repos.append(Repo(repo_name, user[1], language))
+
+        # user repos will be downloaded from the queue
         queue.append(username)
+        return queue
 
 
 def save_data(data, file):
     json.dump(data, open(file, "w"), cls=CustomJsonEncoder)
 
 
-# Analizza fino a profondità desired_depth le repo di ogni utente nella queue
-def analyze_to_depth(desired_depth):
-    for x in range(desired_depth):
-        while len(queue) > 0:
-            user = queue.popleft()
-            print("Analyzing user: {}".format(user))
-            collect_data_on_user_repos(user)
+# For every user u in the queue, it saves u's contributors
+def save_user_queue_contributors(user_queue):
+    while len(user_queue) > 0:
+        user = user_queue.popleft()
+        print("Analyzing user: {}".format(user))
+        collect_data_on_user_repos(user)
 
 
 def collect_data_on_user_repos(user):
@@ -104,9 +106,10 @@ def collect_data_on_user_repos(user):
     for repo in repos_data:
         print("Analyzing repo: {}".format(repo[0]))
         # per la repo in analisi, ottengo lista contributors
-        contributors_data = get_repo_contributors(user, repo[0])
+        repo_contributors = get_repo_contributors(user, repo[0])
+
         # chiamo funzione run_from_data che inserisce utenti/oggetti Repo in user_dict
-        run_from_data(contributors_data, repo[0], repo[1])
+        run_from_data(get_first_five_contributors(repo_contributors), repo[0], repo[1])
 
 
 # funzione di test per analisi errori su specifici user/nodi
@@ -117,10 +120,17 @@ def analyze_specific_user(user):
         run_from_data(contributors_data, repo[0], repo[1])
 
 
+def init_crawler():
+    repo_contributors = get_repo_contributors("torvalds", "linux",)
+    return get_first_five_contributors(repo_contributors)
+
+
 def main():
-    data = get_repo_contributors("torvalds", "linux",)
-    run_from_data(data, "linux", "C")
-    analyze_to_depth(depth)
+    init_five_contributors = init_crawler()
+    user_queue = run_from_data(init_five_contributors, "linux", "C")
+
+    save_user_queue_contributors(user_queue)
+    save_user_queue_contributors(user_queue)
     save_data(user_dict, "depth2.json")
 
 
