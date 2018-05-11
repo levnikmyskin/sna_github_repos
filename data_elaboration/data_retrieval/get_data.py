@@ -73,7 +73,8 @@ def get_repos_info(repos_dic: Dict):
     return repos_dic['name'], repos_dic['language']
 
 
-# five_contributors: The first five contributors of a repo
+# Appends to user_dict five_contributors of the repo repo_name
+# It finally enqueues every contributor in a queue and returns this queue
 def run_from_data(five_contributors, repo_name, language):
     if five_contributors is None:
         return
@@ -113,11 +114,11 @@ def collect_data_on_user_repos(user):
 
 
 # funzione di test per analisi errori su specifici user/nodi
-def analyze_specific_user(user):
-    repos_data = get_user_repos(user)
-    for repo in repos_data:
-        contributors_data = get_repo_contributors(user, repo[0])
-        run_from_data(contributors_data, repo[0], repo[1])
+# def analyze_specific_user(user):
+#     repos_data = get_user_repos(user)
+#     for repo in repos_data:
+#         contributors_data = get_repo_contributors(user, repo[0])
+#         run_from_data(contributors_data, repo[0], repo[1])
 
 
 def init_crawler():
