@@ -3,7 +3,7 @@ import requests
 import json
 import time
 from collections import deque
-from data_elaboration.data_retrieval.data_structures import Repo, CustomJsonEncoder
+from data_structures import Repo, CustomJsonEncoder
 
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
