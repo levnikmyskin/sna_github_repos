@@ -2,14 +2,13 @@ from typing import Dict
 import requests
 import json
 import time
-from collections import deque
 from data_structures import Repo, CustomJsonEncoder
 
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
 user_dict = dict()
+queue = list()
 visited_repos = set()
-queue = deque()
 # For requests using Basic Authentication or OAuth, you can make up to 5000 requests per hour.
 # t_min = 5000/(60*60) = 1.38s
 
@@ -98,11 +97,15 @@ def save_data(data, file):
 
 # For every user u in the queue, it saves u's contributors
 def save_user_queue_contributors(user_queue):
-    while len(user_queue) > 0:
-        user = user_queue.popleft()
+    queue_copy = user_queue.copy()
+    user_queue.clear()
+    for user in queue_copy:
         print("Analyzing user: {}".format(user))
         repos_data = get_user_repos(user)
         collect_data_on_user_repos(user, repos_data)
+
+        # TODO TEMP
+        json.dump(user_dict, open("temp_data.json", "w"), cls=CustomJsonEncoder)
 
 
 def collect_data_on_user_repos(user, repos_data):
@@ -135,7 +138,6 @@ def main():
     init_five_contributors = init_crawler()
     save_user_and_enqueue_it(init_five_contributors, "linux", "C")
 
-    save_user_queue_contributors(queue)
     save_user_queue_contributors(queue)
     save_user_queue_contributors(queue)
 
