@@ -73,7 +73,7 @@ def get_repos_info(repos_dic: Dict):
 
 # Appends to user_dict five_contributors of the repo repo_name
 # It finally enqueues every contributor in a queue and returns this queue
-def run_from_data(five_contributors, repo_name, language):
+def save_user_and_enqueue_it(five_contributors, repo_name, language):
     if five_contributors is None:
         return
     for user in five_contributors:
@@ -105,9 +105,11 @@ def collect_data_on_user_repos(user):
         print("Analyzing repo: {}".format(repo[0]))
         # per la repo in analisi, ottengo lista contributors
         repo_contributors = get_repo_contributors(user, repo[0])
+        if not repo_contributors:
+            continue
 
         # chiamo funzione run_from_data che inserisce utenti/oggetti Repo in user_dict
-        run_from_data(get_first_five_contributors(repo_contributors), repo[0], repo[1])
+        save_user_and_enqueue_it(get_first_five_contributors(repo_contributors), repo[0], repo[1])
 
 
 # funzione di test per analisi errori su specifici user/nodi
@@ -125,7 +127,7 @@ def init_crawler():
 
 def main():
     init_five_contributors = init_crawler()
-    run_from_data(init_five_contributors, "linux", "C")
+    save_user_and_enqueue_it(init_five_contributors, "linux", "C")
 
     save_user_queue_contributors(queue)
     save_user_queue_contributors(queue)
