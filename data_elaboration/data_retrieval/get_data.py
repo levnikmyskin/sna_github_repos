@@ -88,8 +88,12 @@ def run_from_data(five_contributors, repo_name, language):
 
 def save_data(data, file):
     json.dump(data, open(file, "w"), cls=CustomJsonEncoder)
-    with open("log.txt", "w") as f:
-        f.write(_loggedDataContributors, _loggedDataRepos)
+    with open("log.txt", "a") as f:
+        f.write(_loggedDataContributors)
+        f.write(_loggedDataRepos)
+    with open("queue.py", "a") as q:
+        for remaining_elem in queue:
+            q.write(remaining_elem)
 
 
 # For every user u in the queue, it saves u's contributors
@@ -97,16 +101,18 @@ def save_user_queue_contributors(user_queue):
     while len(user_queue) > 0:
         user = user_queue.popleft()
         print("Analyzing user: {}".format(user))
-        collect_data_on_user_repos(user)
+        repos_data = get_user_repos(user)
+        collect_data_on_user_repos(user, repos_data)
 
 
-def collect_data_on_user_repos(user):
+def collect_data_on_user_repos(user, repos_data):
     # per l'utente in analisi, ottengo lista delle sue repository
-    repos_data = get_user_repos(user)
     for repo in repos_data:
         print("Analyzing repo: {}".format(repo[0]))
         # per la repo in analisi, ottengo lista contributors
         repo_contributors = get_repo_contributors(user, repo[0])
+        if not repo_contributors:
+            continue
 
         # chiamo funzione run_from_data che inserisce utenti/oggetti Repo in user_dict
         run_from_data(get_first_five_contributors(repo_contributors), repo[0], repo[1])
@@ -129,6 +135,7 @@ def main():
     init_five_contributors = init_crawler()
     run_from_data(init_five_contributors, "linux", "C")
 
+    save_user_queue_contributors(queue)
     save_user_queue_contributors(queue)
     save_user_queue_contributors(queue)
 
