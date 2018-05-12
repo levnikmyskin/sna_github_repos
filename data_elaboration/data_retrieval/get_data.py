@@ -3,7 +3,7 @@ import requests
 import json
 import time
 from collections import deque
-from data_elaboration.data_retrieval.data_structures import Repo, CustomJsonEncoder
+from data_structures import Repo, CustomJsonEncoder
 
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
@@ -88,6 +88,8 @@ def save_user_and_enqueue_it(five_contributors, repo_name, language):
 
 def save_data(data, file):
     json.dump(data, open(file, "w"), cls=CustomJsonEncoder)
+    with open("log.txt", "w") as f:
+        f.write(_loggedDataContributors, _loggedDataRepos)
 
 
 # For every user u in the queue, it saves u's contributors
