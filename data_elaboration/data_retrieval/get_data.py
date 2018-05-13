@@ -6,7 +6,6 @@ from data_structures import Repo, CustomJsonEncoder
 
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
-user_dict = dict()
 queue = list()
 visited_repos = set()
 # For requests using Basic Authentication or OAuth, you can make up to 5000 requests per hour.
@@ -65,7 +64,7 @@ def get_repos_info(repos_dic: Dict):
 
 # Appends to user_dict five_contributors of the repo repo_name
 # It finally enqueues every contributor in a queue and returns this queue
-def save_user_and_enqueue_it(five_contributors, repo_name, language):
+def save_user_and_enqueue_it(five_contributors, repo_name, language, user_dict):
     if five_contributors is None:
         return
     for user in five_contributors:
@@ -86,16 +85,16 @@ def save_data(data, file):
 
 
 # For every user u in the queue, it saves u's contributors
-def save_user_queue_contributors(user_queue):
+def save_user_queue_contributors(user_queue, user_dict):
     queue_copy = user_queue.copy()
     user_queue.clear()
     for user in queue_copy:
         print("Analyzing user: {}".format(user))
         repos_data = get_user_repos(user)
-        collect_data_on_user_repos(user, repos_data)
+        collect_data_on_user_repos(user, repos_data, user_dict)
 
 
-def collect_data_on_user_repos(user, repos_data):
+def collect_data_on_user_repos(user, repos_data, user_dict):
     # per l'utente in analisi, ottengo lista delle sue repository
     for repo in repos_data:
         print("Analyzing repo: {}".format(repo[0]))
@@ -105,7 +104,7 @@ def collect_data_on_user_repos(user, repos_data):
             continue
 
         # chiamo funzione run_from_data che inserisce utenti/oggetti Repo in user_dict
-        save_user_and_enqueue_it(get_first_five_contributors(repo_contributors), repo[0], repo[1])
+        save_user_and_enqueue_it(get_first_five_contributors(repo_contributors), repo[0], repo[1], user_dict)
 
 
 # funzione di test per analisi errori su specifici user/nodi
@@ -122,19 +121,19 @@ def init_crawler():
 
 
 def main():
+    user_dict = dict()
     try:
         init_five_contributors = init_crawler()
         save_user_and_enqueue_it(init_five_contributors, "linux", "C")
-        save_data(user_dict, "testdata.json")
 
-        quit(0)
-        save_user_queue_contributors(queue)
-        save_user_queue_contributors(queue)
-        save_user_queue_contributors(queue)
+        save_user_queue_contributors(queue, user_dict)
+        save_user_queue_contributors(queue, user_dict)
+        save_user_queue_contributors(queue, user_dict)
 
     finally:
         save_data(user_dict, "depth3.json")
 
 
-main()
+if __name__ == "__main__":
+    main()
 
