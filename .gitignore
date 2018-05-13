@@ -67,3 +67,5 @@ fabric.properties
 
 data_elaboration/data_retrieval/*.txt
 data_elaboration/data_retrieval/*.json
+data_elaboration/data_retrieval/__pycache__
+data_elaboration/data_retrieval/log.txt
