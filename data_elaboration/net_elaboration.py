@@ -49,7 +49,7 @@ def elaborate_csv_for_gephi(repo_dict):
                 _users = users.copy()
                 _users.remove(user)
                 for u in _users:
-                    writer.writerow([user[0], u[0]])
+                    writer.writerow([user[0], u[0], u[1]])
 
 
 def create_networkx_data(repo_dict):
