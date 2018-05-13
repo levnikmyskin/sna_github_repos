@@ -2,6 +2,7 @@ from typing import Dict
 import requests
 import json
 import time
+from collections import deque
 from data_structures import Repo, CustomJsonEncoder
 
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
