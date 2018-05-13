@@ -24,7 +24,7 @@ def get_repo_contributors(owner, repo):
     time.sleep(2)
     response = requests.get(CONTRIBUTORS_ENDPOINT.format(owner, repo), auth=('socialNetworkAnalysis', 'XTfLGSS3'))
     # manage 204 HTTP response returning None value
-    if response.status_code == 204:
+    if response.status_code != 200:
         return
     repo_contributors = response.json()
     # TODO rimuovi qui
@@ -88,11 +88,13 @@ def save_user_and_enqueue_it(five_contributors, repo_name, language):
 def save_data(data, file):
     json.dump(data, open(file, "w"), cls=CustomJsonEncoder)
     with open("log.txt", "a") as f:
-        f.write(_loggedDataContributors)
-        f.write(_loggedDataRepos)
+        f.write(str(_loggedDataContributors))
+        f.write(str(_loggedDataRepos))
     with open("queue.py", "a") as q:
+        q.write("queue = [")
         for remaining_elem in queue:
-            q.write(remaining_elem)
+            q.write(remaining_elem + ", ")
+        q.write("]")
 
 
 # For every user u in the queue, it saves u's contributors
@@ -135,13 +137,16 @@ def init_crawler():
 
 
 def main():
-    init_five_contributors = init_crawler()
-    save_user_and_enqueue_it(init_five_contributors, "linux", "C")
+    try:
+        init_five_contributors = init_crawler()
+        save_user_and_enqueue_it(init_five_contributors, "linux", "C")
 
-    save_user_queue_contributors(queue)
-    save_user_queue_contributors(queue)
+        save_user_queue_contributors(queue)
+        save_user_queue_contributors(queue)
+        save_user_queue_contributors(queue)
 
-    save_data(user_dict, "depth2.json")
+    finally:
+        save_data(user_dict, "depth3.json")
 
 
 main()
