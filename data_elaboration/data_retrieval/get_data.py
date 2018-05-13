@@ -12,9 +12,6 @@ visited_repos = set()
 # For requests using Basic Authentication or OAuth, you can make up to 5000 requests per hour.
 # t_min = 5000/(60*60) = 1.38s
 
-_loggedDataContributors = list()
-_loggedDataRepos = list()
-
 
 # ottengo lista contributors della repository in analisi e rispettivi commits (passata come argomento)
 def get_repo_contributors(owner, repo):
@@ -27,8 +24,6 @@ def get_repo_contributors(owner, repo):
     if response.status_code != 200:
         return
     repo_contributors = response.json()
-    # TODO rimuovi qui
-    _loggedDataContributors.append(repo_contributors)
 
     visited_repos.add(repo)
     return repo_contributors
@@ -56,8 +51,6 @@ def get_user_repos(user):
     print(response)
     repos_json = response.json()
 
-    # TODO RIMUOVI QUI
-    _loggedDataRepos.append(repos_json)
     repo_list = list()
 
     for elem in repos_json:
@@ -87,14 +80,9 @@ def save_user_and_enqueue_it(five_contributors, repo_name, language):
 
 def save_data(data, file):
     json.dump(data, open(file, "w"), cls=CustomJsonEncoder)
-    with open("log.txt", "a") as f:
-        f.write(str(_loggedDataContributors))
-        f.write(str(_loggedDataRepos))
     with open("queue.py", "a") as q:
-        q.write("queue = [")
-        for remaining_elem in queue:
-            q.write(remaining_elem + ", ")
-        q.write("]")
+        q.write("queue = ")
+        q.write(str(queue))
 
 
 # For every user u in the queue, it saves u's contributors
@@ -105,9 +93,6 @@ def save_user_queue_contributors(user_queue):
         print("Analyzing user: {}".format(user))
         repos_data = get_user_repos(user)
         collect_data_on_user_repos(user, repos_data)
-
-        # TODO TEMP
-        json.dump(user_dict, open("temp_data.json", "w"), cls=CustomJsonEncoder)
 
 
 def collect_data_on_user_repos(user, repos_data):
@@ -140,7 +125,9 @@ def main():
     try:
         init_five_contributors = init_crawler()
         save_user_and_enqueue_it(init_five_contributors, "linux", "C")
+        save_data(user_dict, "testdata.json")
 
+        quit(0)
         save_user_queue_contributors(queue)
         save_user_queue_contributors(queue)
         save_user_queue_contributors(queue)
