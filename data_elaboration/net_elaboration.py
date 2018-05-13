@@ -1,4 +1,6 @@
 import json
+import csv
+import networkx as nx
 
 
 def associate_users_to_repos():
@@ -40,7 +42,36 @@ def get_collaboration_data(repo_dict):
     return collaboration_dict
 
 
+def elaborate_csv_for_gephi(repo_dict):
+    with open('network.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for repo_name, users in repo_dict.items():
+            for user in users:
+                _users = users.copy()
+                _users.remove(user)
+                for u in _users:
+                    writer.writerow([user[0], u[0]])
+
+
+def create_networkx_data(repo_dict):
+    graph = nx.Graph()
+    for repo_name, users in repo_dict.items():
+        for user in users:
+            graph.add_node(user[0])
+        for user in users:
+            _users = users.copy()
+            _users.remove(user)
+            for u in _users:
+                graph.add_edge(user[0], u[0])
+    return graph
+
+
 repo_dict = associate_users_to_repos()
 
-collaboration_data = get_collaboration_data(repo_dict)
-print_collab_data(collaboration_data)
+# elaborate_csv_for_gephi(repo_dict)
+graph = create_networkx_data(repo_dict)
+
+print("disegno")
+nx.draw(graph, with_labels=True)
+# collaboration_data = get_collaboration_data(repo_dict)
+# print_collab_data(collaboration_data)
