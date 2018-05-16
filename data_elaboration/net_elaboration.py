@@ -55,7 +55,7 @@ def get_collaboration_data(repo_dict):
     return collaboration_dict
 
 
-def elaborate_csv_for_gephi(repo_dict):
+def elaborate_csvEDGES_for_gephi(repo_dict):
     with open('network.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for repo_name, users in repo_dict.items():
@@ -65,6 +65,13 @@ def elaborate_csv_for_gephi(repo_dict):
                 for u in _users:
                     lang = u[2] if u[2] is not None else "null"
                     writer.writerow([user[0], u[0], u[1], lang])
+
+
+def elaborate_csvNODES_for_gephi(user_dict):
+    with open('networkNODES.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for user, lang in user_dict.items():
+            writer.writerow([[user][0], [user][0], lang[0]])
 
 
 def create_networkx_data(repo_dict):
@@ -84,7 +91,7 @@ data = json.load(open("./depth4_edited.json", "r"))
 user_language_dict = get_user_language_dict(data)
 repo_dict = associate_users_to_repos(data, user_language_dict)
 
-elaborate_csv_for_gephi(repo_dict)
-
+# elaborate_csvEDGES_for_gephi(repo_dict)
+# elaborate_csvNODES_for_gephi(user_language_dict)
 # collaboration_data = get_collaboration_data(repo_dict)
 # print_collab_data(collaboration_data)

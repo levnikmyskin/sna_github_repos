@@ -125,7 +125,7 @@ def main():
     user_dict = dict()
     try:
         init_five_contributors = init_crawler()
-        save_user_and_enqueue_it(init_five_contributors, "linux", "C")
+        save_user_and_enqueue_it(init_five_contributors, "linux", "C", user_dict)
 
         save_user_queue_contributors(queue, user_dict)
         save_user_queue_contributors(queue, user_dict)
