@@ -66,7 +66,7 @@ def get_repos_info(repos_dic: Dict):
 # Appends to user_dict five_contributors of the repo repo_name
 # It finally enqueues every contributor in a queue and returns this queue
 def save_user_and_enqueue_it(five_contributors, repo_name, language, user_dict):
-    if five_contributors is None:
+    if five_contributors is None or repo_name in visited_repos:
         return
     for user in five_contributors:
         username = user[0]
@@ -86,9 +86,9 @@ def save_data(data, file):
 
 
 # For every user u in the queue, it saves u's contributors
-def save_user_queue_contributors(user_queue, user_dict):
-    queue_copy = user_queue.copy()
-    user_queue.clear()
+def save_user_queue_contributors(user_dict):
+    queue_copy = queue.copy()
+    queue.clear()
     for user in queue_copy:
         print("Analyzing user: {}".format(user))
         repos_data = get_user_repos(user)
@@ -108,14 +108,6 @@ def collect_data_on_user_repos(user, repos_data, user_dict):
         save_user_and_enqueue_it(get_first_five_contributors(repo_contributors), repo[0], repo[1], user_dict)
 
 
-# funzione di test per analisi errori su specifici user/nodi
-# def analyze_specific_user(user):
-#     repos_data = get_user_repos(user)
-#     for repo in repos_data:
-#         contributors_data = get_repo_contributors(user, repo[0])
-#         run_from_data(contributors_data, repo[0], repo[1])
-
-
 def init_crawler():
     repo_contributors = get_repo_contributors("torvalds", "linux",)
     return get_first_five_contributors(repo_contributors)
@@ -127,9 +119,9 @@ def main():
         init_five_contributors = init_crawler()
         save_user_and_enqueue_it(init_five_contributors, "linux", "C", user_dict)
 
-        save_user_queue_contributors(queue, user_dict)
-        save_user_queue_contributors(queue, user_dict)
-        save_user_queue_contributors(queue, user_dict)
+        save_user_queue_contributors(user_dict)
+        save_user_queue_contributors(user_dict)
+        save_user_queue_contributors(user_dict)
 
     finally:
         save_data(user_dict, "depth3.json")

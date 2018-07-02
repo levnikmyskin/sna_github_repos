@@ -1,7 +1,6 @@
 from get_data import save_user_and_enqueue_it, save_data, save_user_queue_contributors
 import json
 import traceback
-import signal
 from queue2135 import queue
 
 
