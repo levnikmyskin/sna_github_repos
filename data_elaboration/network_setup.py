@@ -1,5 +1,4 @@
 import json
-from pprint import pprint
 import networkx as nx
 import csv
 import collections
@@ -58,68 +57,73 @@ def create_csv(coll_dict):
             for collaborator in collaboratorList:
                 writer.writerow([userName, collaborator[0]])
 
+def define_max_component(graph):
+    number_of_nodes = 0
 
-csvfile = "10k.csv"
-repo_dict = get_repo_user_dict(data)
-coll_dict = get_coll_dict(repo_dict)
-#create_csv(coll_dict)
-# graph = create_network_from_json(coll_dict)
+    for component in nx.connected_component_subgraphs(graph):
+        if component.number_of_nodes() > 1000:
+            max_comp = component
+            number_of_nodes = max_comp.number_of_nodes()
+        else:
+            continue
+    return max_comp
 
-graph = create_network_from_csv(csvfile)
-nodes = graph.number_of_nodes()
-edges = graph.number_of_edges()
-con_components = nx.number_connected_components(graph)
-density = nx.density(graph)
-degree_centrality = nx.degree_centrality(graph)
+def main():
+    csvfile = "10k.csv"
+    repo_dict = get_repo_user_dict(data)
+    coll_dict = get_coll_dict(repo_dict)
+    # create_csv(coll_dict)
+    # graph = create_network_from_json(coll_dict)
+
+    graph = create_network_from_csv(csvfile)
+    nodes = graph.number_of_nodes()
+    edges = graph.number_of_edges()
+    con_components = nx.number_connected_components(graph)
+    density = nx.density(graph)
+    degree_centrality = nx.degree_centrality(graph)
+    max_comp = define_max_component(graph)
+
+    shortest_path = nx.shortest_path_length(max_comp)
+    closeness_centrality = nx.closeness_centrality(max_comp)
+    sorted_closeness_centrality = sorted(closeness_centrality.items(), key=lambda t: t[1], reverse=True)
+    edge_betweenness = nx.edge_betweenness_centrality(max_comp)
+    sorted_edge_betweenness = sorted(edge_betweenness.items(), key=lambda t: t[1], reverse=True)
+    degree_centrality_comp = nx.degree_centrality(max_comp)
+    sorted_degree_centrality = sorted(degree_centrality_comp.items(), key=lambda t: t[1], reverse=True)
+
+    degree_sequence = sorted([d for n, d in graph.degree()], reverse=True)
+    degreeCount = collections.Counter(degree_sequence)
+
+    degreeList = list()
+    for node in graph.nodes():
+        degreeList.append(graph.degree(node))
+
+    print("--- Network Analysis:")
+    print("Nodes: " + str(nodes))
+    print("Edges: " + str(edges))
+    print("Density: " + str(density))
+    print("Max Degree: " + str(max(degreeList)))
+
+    print("Connected Components: " + str(con_components))
+    print("Graph Avg Degree: " + str(2 * edges / nodes))
+    print("Edge Probability: " + str(2 * edges / (nodes * (nodes - 1))))
+    print("Max Comp Diameter: " + str(nx.diameter(max_comp)))
+    print("Max Comp Average Clustering: " + str(nx.average_clustering(max_comp)))
+    print("Max Comp Shortest Path: " + str(shortest_path))
+
+    # print("Max Degree Centrality: " + str((degree_centrality)))
+    # pprint(max(degree_centrality))
+
+    print("Max Comp Degree Centrality: " + str(list(sorted_degree_centrality)[0]))
+    print("Max Comp Closeness Centrality: " + str(list(sorted_closeness_centrality)[0]))
+    print("Max Comp Edge Betweenness: " + str(list(sorted_edge_betweenness)[0]))
+
+    # print("Degree Distribution: " + str((degreeCount)))
+
+main()
 
 
-number_of_nodes = 0
-
-for component in nx.connected_component_subgraphs(graph):
-    if component.number_of_nodes() > 1000:
-        max_comp = component
-        number_of_nodes = max_comp.number_of_nodes()
-    else:
-        continue
-
-shortest_path = nx.shortest_path_length(max_comp)
-closeness_centrality = nx.closeness_centrality(max_comp)
-sorted_closeness_centrality = sorted(closeness_centrality.items(), key=lambda t:t[1], reverse=True)
-edge_betweenness = nx.edge_betweenness_centrality(max_comp)
-sorted_edge_betweenness = sorted(edge_betweenness.items(), key=lambda t:t[1], reverse=True)
-degree_centrality_comp = nx.degree_centrality(max_comp)
-sorted_degree_centrality = sorted(degree_centrality_comp.items(), key=lambda t:t[1], reverse=True)
 
 
-degree_sequence = sorted([d for n, d in graph.degree()], reverse=True)
-degreeCount = collections.Counter(degree_sequence)
-
-degreeList = list()
-for node in graph.nodes():
-    degreeList.append(graph.degree(node))
-
-
-
-print("--- Network Analysis:")
-print("Nodes: " + str(nodes))
-print("Edges: " + str(edges))
-print("Density: " + str(density))
-print("Max Degree: " + str(max(degreeList)))
-
-print("Connected Components: " + str(con_components))
-print("Graph Avg Degree: " + str(2*edges/nodes))
-print("Edge Probability: " + str(2*edges/(nodes * (nodes-1))))
-print("Max Comp Diameter: " + str(nx.diameter(max_comp)))
-print("Max Comp Average Clustering: " + str(nx.average_clustering(max_comp)))
-print("Max Comp Shortest Path: " + str(shortest_path))
-
-# print("Max Degree Centrality: " + str((degree_centrality)))
-# pprint(max(degree_centrality))
-
-print("Max Comp Degree Centrality: " + str(list(sorted_degree_centrality)[0]))
-print("Max Comp Closeness Centrality: " + str(list(sorted_closeness_centrality)[0]))
-print("Max Comp Edge Betweenness: " + str(list(sorted_edge_betweenness)[0]))
-
-# print("Degree Distribution: " + str((degreeCount)))
 
 
