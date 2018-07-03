@@ -1,26 +1,37 @@
 import networkx as nx
 from networkx.algorithms import community
 from networkx.algorithms.community import k_clique_communities
-import itertools
 from community import community_louvain
 import demon as d
+import pquality
 
-# TODO: capire! Se le reti con cui compariamo vengono generate ogni volta, queste saranno sempre leggermente diverse quindi direi
-# che è necessario - una volta create - salvare come edgelist e poi ricrearle sempre a partire da edgelist in modo che siano sempre uguali...
+# TODO: tutto questo schifo d'importazione da sistemare
 
+# TODO: AH NO. Dobbiamo fare Community Evaluation SOLAMENTE SUL CRAWLED DATA top
 
-# TODO: far sì che qui vengano importati le reti impostate in network_setup. Per velocità adesso utilizzo delle reti generate random
+# TODO: far sì che qui vengano importati le reti impostate in network_setup. Per velocità adesso utilizzo
+# delle reti generate random
 graph_ba = nx.barabasi_albert_graph(100, 5, seed=None)
+graph_crawled = "QUA_IMPORTARE_L_CRWALED_GRAPH"
+
+
+# def get_girvan_newman(graph, iteration):
+#     girvan_list = list()
+#     comm_generator = community.girvan_newman(graph)
+#     limited = itertools.takewhile(lambda t: len(t) <= iteration, comm_generator)
+#     for communities in limited:
+#         girvan_list.append(tuple(sorted(c) for c in communities))
+#
+#     return girvan_list
 
 
 def get_girvan_newman(graph, iteration):
-    girvan_list = list()
-    comm_generator = community.girvan_newman(graph)
-    limited = itertools.takewhile(lambda t: len(t) <= iteration, comm_generator)
-    for communities in limited:
-        girvan_list.append(tuple(sorted(c) for c in communities))
+    gn_hierarchy = community.girvan_newman(graph)
 
-    return girvan_list
+    for x in range(iteration):
+        coms_gn = [tuple(x) for x in next(gn_hierarchy)]
+
+    return coms_gn
 
 
 def get_k_clique(graph, k):
@@ -58,6 +69,7 @@ def get_demon(graph):
 
     return communities
 
+
 def print_results(clique, girv_part, label_part, louv_part, demon_part):
     print("K-Clique partitions: " + str(clique))
     print("Girvan-Newman partitions: " + str(girv_part))
@@ -66,15 +78,44 @@ def print_results(clique, girv_part, label_part, louv_part, demon_part):
     print("Demon partitions: " + str(demon_part))
 
 
+def get_partition_quality(graph, partition):
+    results = pquality.pquality_summary(graph, partition)
+    print(results["Indexes"])
+
+
 def main():
-    clique = get_k_clique(graph_ba, 3)
-    girv_part = get_girvan_newman(graph_ba, 5)
+    clique_part = get_k_clique(graph_ba, 3)
+    girv_part = get_girvan_newman(graph_ba, 10)
     label_part = get_label_prop(graph_ba)
     louv_part = get_louvain(graph_ba)
-    demon_part =  get_demon(graph_ba)
+    demon_part = get_demon(graph_ba)
 
-    print_results(clique, girv_part, label_part, louv_part, demon_part)
+    print_results(clique_part, girv_part, label_part, louv_part, demon_part)
 
+    print("\n")
+    print("Clique Evaluation")
+    get_partition_quality(graph_ba, clique_part)
+    print("____________________________________________________________")
+
+    print("\n")
+    print("Girvan-Newman Evaluation")
+    get_partition_quality(graph_ba, girv_part)
+    print("____________________________________________________________")
+
+    print("\n")
+    print("Label Propagation Evaluation")
+    get_partition_quality(graph_ba, label_part)
+    print("____________________________________________________________")
+
+    print("\n")
+    print("Louvain Evaluation")
+    get_partition_quality(graph_ba, louv_part)
+    print("____________________________________________________________")
+
+    print("\n")
+    print("Demon Evaluation")
+    get_partition_quality(graph_ba, demon_part)
+    print("____________________________________________________________")
 
 
 main()
