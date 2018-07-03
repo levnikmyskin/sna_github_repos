@@ -114,7 +114,7 @@ def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_deg
 
 def main():
 
-    csvfile = "testCSVlabel.csv"
+    csvfile = "CSVlabel10k.csv"
 
     graph = create_network_from_csv(csvfile)
     max_comp = define_max_component(graph)
@@ -123,7 +123,7 @@ def main():
     edges = graph.number_of_edges()
     density = nx.density(graph)
     degree_centrality = nx.degree_centrality(graph)
-    avg_degree = edges/nodes
+    avg_degree = 2*edges/nodes
     con_components = nx.number_connected_components(graph)
     degree_dist = get_degree_dist(graph)
 
@@ -131,6 +131,7 @@ def main():
     bet_cen, edge_bet_cen, clo_cen, eig_cen = centrality_analysis(max_comp)
     diameter = nx.diameter(max_comp)
     # TODO: trovare come implementare in maniera proficua Shortest Path
+    # magari implementare Average Path Length
     # shortest_path_length = nx.shortest_path_length(max_comp)
 
     edge_probability_ER = 2*edges/(nodes*(nodes-1))
