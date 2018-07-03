@@ -16,7 +16,7 @@ def get_repo_contributors(owner, repo):
     if repo in visited_repos:
         return
     # Timer di attesa per richiesta API github
-    time.sleep(0.3)
+    time.sleep(0.85)
     response = requests.get(CONTRIBUTORS_ENDPOINT.format(owner, repo), auth=('socialNetworkAnalysis', 'XTfLGSS3'))
     # manage 204 HTTP response returning None value
     if response.status_code != 200:
@@ -77,13 +77,13 @@ def save_user_and_enqueue_it(five_contributors, repo_name, language, user_dict):
 
 def save_data(data, file):
     json.dump(data, open(file, "w"), cls=CustomJsonEncoder)
-    with open("queue_luglio.py", "a") as q:
+    with open("queue_luglio2.py", "a") as q:
         q.write("queue = ")
         q.write(str(queue))
 
 
 # For every user u in the queue, it saves u's contributors
-def save_user_queue_contributors(user_dict):
+def save_user_queue_contributors(queue, user_dict):
     queue_copy = queue.copy()
     queue.clear()
     for user in queue_copy:
@@ -116,15 +116,15 @@ def main():
         init_five_contributors = init_crawler()
         save_user_and_enqueue_it(init_five_contributors, "linux", "C", user_dict)
 
-        save_user_queue_contributors(user_dict)
-        save_user_queue_contributors(user_dict)
-        save_user_queue_contributors(user_dict)
-        save_user_queue_contributors(user_dict)
-        save_user_queue_contributors(user_dict)
+        save_user_queue_contributors(queue, user_dict)
+        save_user_queue_contributors(queue, user_dict)
+        save_user_queue_contributors(queue, user_dict)
+        save_user_queue_contributors(queue, user_dict)
+        save_user_queue_contributors(queue, user_dict)
     except:
         print(traceback.format_exc())
     finally:
-        save_data(user_dict, "luglio.json")
+        save_data(user_dict, "luglio2.json")
 
 
 if __name__ == "__main__":
