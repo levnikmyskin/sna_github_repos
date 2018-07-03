@@ -87,7 +87,7 @@ def get_degree_dist(graph):
 
 def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
-                  clo_cen, eig_cen, diameter, edge_probability_ER, min_degree_BA):
+                  clo_cen, eig_cen, diameter):
     print("--- Network Analysis:")
     print("Nodes: " + str(nodes))
     print("Edges: " + str(edges))
@@ -106,17 +106,22 @@ def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_deg
     print("Closeness Centrality : " + str(get_sorted_dict(clo_cen)[:1]))
     print("Eigenvector Centrality : " + str(get_sorted_dict(eig_cen)[:1]))
     print("Diameter: " + str(diameter))
-
     print("\n")
-    print(edge_probability_ER)
-    print(min_degree_BA)
 
 
-def main():
+def generate_comparable_graphs(nodes, probability, min_degree):
+    comparable_graphs = list()
 
-    csvfile = "CSVlabel10k.csv"
+    graph_ER = nx.fast_gnp_random_graph(nodes, probability, directed=False)
+    graph_BA = nx.barabasi_albert_graph(nodes, int(min_degree), seed=None)
 
-    graph = create_network_from_csv(csvfile)
+    comparable_graphs.append(graph_ER)
+    comparable_graphs.append(graph_BA)
+
+    return comparable_graphs
+
+
+def run_analytical_task(graph):
     max_comp = define_max_component(graph)
 
     nodes = graph.number_of_nodes()
@@ -134,21 +139,35 @@ def main():
     # magari implementare Average Path Length
     # shortest_path_length = nx.shortest_path_length(max_comp)
 
-    edge_probability_ER = 2*edges/(nodes*(nodes-1))
-    min_degree_BA = edges/nodes
-
-
-
 
     print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
-                  clo_cen, eig_cen, diameter, edge_probability_ER, min_degree_BA)
+                  clo_cen, eig_cen, diameter)
 
+
+def main():
+
+    csvfile = "testCSVlabel.csv"
+
+    graph_crawled = create_network_from_csv(csvfile)
+
+    nodes = graph_crawled.number_of_nodes()
+    edges = graph_crawled.number_of_edges()
+
+    edge_probability_ER = 2*edges/(nodes*(nodes-1))
+    min_degree_BA = edges/nodes
+
+    run_analytical_task(graph_crawled)
+
+    comparable_graphs = generate_comparable_graphs(nodes, edge_probability_ER, min_degree_BA)
+
+    for graph in comparable_graphs:
+        print("____________________________________________________________________________________")
+        run_analytical_task(graph)
 
 
 
 main()
-
 
 
 
