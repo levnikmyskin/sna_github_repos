@@ -41,8 +41,8 @@ def create_network_from_json(coll_dict):
 def create_network_from_csv(csvfile):
     graph = nx.Graph()
     with open(csvfile, "r") as csvfile:
-        dataList = list(csv.reader(csvfile, delimiter=";"))
-        for elem in dataList:
+        data_list = list(csv.reader(csvfile, delimiter=";"))
+        for elem in data_list:
             graph.add_edge(elem[0], elem[1], weight=elem[2], language=elem[3])
 
     return graph
@@ -72,7 +72,7 @@ def centrality_analysis(graph):
 
 
 def get_sorted_dict(dictionary):
-    sort_dict = sorted(dictionary.items(), key=lambda t:t[1], reverse=True)
+    sort_dict = sorted(dictionary.items(), key=lambda t: t[1], reverse=True)
 
     return sort_dict
 
@@ -83,30 +83,6 @@ def get_degree_dist(graph):
     sorted_degree_distribution = counter.most_common()
 
     return sorted_degree_distribution
-
-
-def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
-                  con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
-                  clo_cen, eig_cen, diameter):
-    print("--- Network Analysis:")
-    print("Nodes: " + str(nodes))
-    print("Edges: " + str(edges))
-    print("Density: " + str(density))
-    print("Max Degree: " + str(max(degree_dist)[0]))
-
-    print("Degree Centrality: " + str(get_sorted_dict(degree_centrality)[:1]))
-    print("Average Degree: " + str(avg_degree))
-    print("Connected Components: " + str(con_components))
-
-    print("\n")
-    print("---Biggest Component Analysis:")
-    print("Average Clustering Coefficient: " + str(avg_clustering_coef))
-    print("Betweenness Centrality : " + str(get_sorted_dict(bet_cen)[:1]))
-    print("Edge Betweenness Centrality : " + str(get_sorted_dict(edge_bet_cen)[:1]))
-    print("Closeness Centrality : " + str(get_sorted_dict(clo_cen)[:1]))
-    print("Eigenvector Centrality : " + str(get_sorted_dict(eig_cen)[:1]))
-    print("Diameter: " + str(diameter))
-    print("\n")
 
 
 def generate_comparable_graphs(nodes, probability, min_degree):
@@ -139,15 +115,43 @@ def run_analytical_task(graph):
     # magari implementare Average Path Length
     # shortest_path_length = nx.shortest_path_length(max_comp)
 
-
     print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
                   clo_cen, eig_cen, diameter)
 
 
+def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
+                  con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
+                  clo_cen, eig_cen, diameter):
+    print("--- Network Analysis:")
+    print("Nodes: " + str(nodes))
+    print("Edges: " + str(edges))
+    print("Density: " + str(density))
+    print("Max Degree: " + str(max(degree_dist)[0]))
+
+    print("Degree Centrality: " + str(get_sorted_dict(degree_centrality)[:1]))
+    print("Average Degree: " + str(avg_degree))
+    print("Connected Components: " + str(con_components))
+
+    print("\n")
+    print("---Biggest Component Analysis:")
+    print("Average Clustering Coefficient: " + str(avg_clustering_coef))
+    print("Betweenness Centrality : " + str(get_sorted_dict(bet_cen)[:1]))
+    print("Edge Betweenness Centrality : " + str(get_sorted_dict(edge_bet_cen)[:1]))
+    print("Closeness Centrality : " + str(get_sorted_dict(clo_cen)[:1]))
+    print("Eigenvector Centrality : " + str(get_sorted_dict(eig_cen)[:1]))
+    print("Diameter: " + str(diameter))
+    print("\n")
+
+
+def generate_edgelist(comparable_graphs):
+    nx.write_edgelist(comparable_graphs[0], "outER.csv", delimiter=";")
+    nx.write_edgelist(comparable_graphs[1], "outBA.csv", delimiter=";")
+
+
 def main():
 
-    csvfile = "testCSVlabel.csv"
+    csvfile = "CSVlabel.csv"
 
     graph_crawled = create_network_from_csv(csvfile)
 
@@ -162,9 +166,12 @@ def main():
     comparable_graphs = generate_comparable_graphs(nodes, edge_probability_ER, min_degree_BA)
 
     for graph in comparable_graphs:
+        # TODO: qui vorrei che stampasse al posto della riga il nome del network in analisi: tipo alla prima
+        # iterazione Graph_ER, alla seconda Graph_BA (sono i nomi degli elementi nella lista comparable_graphs...)
         print("____________________________________________________________________________________")
         run_analytical_task(graph)
 
+    generate_edgelist(comparable_graphs)
 
 
 main()
