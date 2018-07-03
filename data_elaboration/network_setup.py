@@ -3,8 +3,6 @@ import networkx as nx
 import csv
 import collections
 
-data = json.load(open("depth4.json", "r"))
-
 
 def get_repo_user_dict(data):
     repo_dict = dict()
@@ -45,7 +43,7 @@ def create_network_from_csv(csvfile):
     with open(csvfile, "r") as csvfile:
         dataList = list(csv.reader(csvfile, delimiter=";"))
         for elem in dataList:
-            graph.add_edge(elem[0], elem[1])
+            graph.add_edge(elem[0], elem[1], weight=elem[2], language=elem[3])
 
     return graph
 
@@ -57,68 +55,96 @@ def create_csv(coll_dict):
             for collaborator in collaboratorList:
                 writer.writerow([userName, collaborator[0]])
 
+
 def define_max_component(graph):
-    number_of_nodes = 0
+    cc_comp = max(nx.connected_component_subgraphs(graph), key=len)
 
-    for component in nx.connected_component_subgraphs(graph):
-        if component.number_of_nodes() > 1000:
-            max_comp = component
-            number_of_nodes = max_comp.number_of_nodes()
-        else:
-            continue
-    return max_comp
+    return cc_comp
 
-def main():
-    csvfile = "10k.csv"
-    repo_dict = get_repo_user_dict(data)
-    coll_dict = get_coll_dict(repo_dict)
-    # create_csv(coll_dict)
-    # graph = create_network_from_json(coll_dict)
 
-    graph = create_network_from_csv(csvfile)
-    nodes = graph.number_of_nodes()
-    edges = graph.number_of_edges()
-    con_components = nx.number_connected_components(graph)
-    density = nx.density(graph)
-    degree_centrality = nx.degree_centrality(graph)
-    max_comp = define_max_component(graph)
+def centrality_analysis(graph):
+    bet_cen = nx.betweenness_centrality(graph)
+    edge_bet_cen = nx.edge_betweenness_centrality(graph)
+    clo_cen = nx.closeness_centrality(graph)
+    eig_cen = nx.eigenvector_centrality(graph)
 
-    shortest_path = nx.shortest_path_length(max_comp)
-    closeness_centrality = nx.closeness_centrality(max_comp)
-    sorted_closeness_centrality = sorted(closeness_centrality.items(), key=lambda t: t[1], reverse=True)
-    edge_betweenness = nx.edge_betweenness_centrality(max_comp)
-    sorted_edge_betweenness = sorted(edge_betweenness.items(), key=lambda t: t[1], reverse=True)
-    degree_centrality_comp = nx.degree_centrality(max_comp)
-    sorted_degree_centrality = sorted(degree_centrality_comp.items(), key=lambda t: t[1], reverse=True)
+    return bet_cen, edge_bet_cen, clo_cen, eig_cen
 
-    degree_sequence = sorted([d for n, d in graph.degree()], reverse=True)
-    degreeCount = collections.Counter(degree_sequence)
 
-    degreeList = list()
-    for node in graph.nodes():
-        degreeList.append(graph.degree(node))
+def get_sorted_dict(dictionary):
+    sort_dict = sorted(dictionary.items(), key=lambda t:t[1], reverse=True)
 
+    return sort_dict
+
+
+def get_degree_dist(graph):
+    degree = list(graph.degree())
+    counter = collections.Counter(elem[1] for elem in degree)
+    sorted_degree_distribution = counter.most_common()
+
+    return sorted_degree_distribution
+
+
+def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
+                  con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
+                  clo_cen, eig_cen, diameter, edge_probability_ER, min_degree_BA):
     print("--- Network Analysis:")
     print("Nodes: " + str(nodes))
     print("Edges: " + str(edges))
     print("Density: " + str(density))
-    print("Max Degree: " + str(max(degreeList)))
+    print("Max Degree: " + str(max(degree_dist)[0]))
 
+    print("Degree Centrality: " + str(get_sorted_dict(degree_centrality)[:1]))
+    print("Average Degree: " + str(avg_degree))
     print("Connected Components: " + str(con_components))
-    print("Graph Avg Degree: " + str(2 * edges / nodes))
-    print("Edge Probability: " + str(2 * edges / (nodes * (nodes - 1))))
-    print("Max Comp Diameter: " + str(nx.diameter(max_comp)))
-    print("Max Comp Average Clustering: " + str(nx.average_clustering(max_comp)))
-    print("Max Comp Shortest Path: " + str(shortest_path))
 
-    # print("Max Degree Centrality: " + str((degree_centrality)))
-    # pprint(max(degree_centrality))
+    print("\n")
+    print("---Biggest Component Analysis:")
+    print("Average Clustering Coefficient: " + str(avg_clustering_coef))
+    print("Betweenness Centrality : " + str(get_sorted_dict(bet_cen)[:1]))
+    print("Edge Betweenness Centrality : " + str(get_sorted_dict(edge_bet_cen)[:1]))
+    print("Closeness Centrality : " + str(get_sorted_dict(clo_cen)[:1]))
+    print("Eigenvector Centrality : " + str(get_sorted_dict(eig_cen)[:1]))
+    print("Diameter: " + str(diameter))
 
-    print("Max Comp Degree Centrality: " + str(list(sorted_degree_centrality)[0]))
-    print("Max Comp Closeness Centrality: " + str(list(sorted_closeness_centrality)[0]))
-    print("Max Comp Edge Betweenness: " + str(list(sorted_edge_betweenness)[0]))
+    print("\n")
+    print(edge_probability_ER)
+    print(min_degree_BA)
 
-    # print("Degree Distribution: " + str((degreeCount)))
+
+def main():
+
+    csvfile = "testCSVlabel.csv"
+
+    graph = create_network_from_csv(csvfile)
+    max_comp = define_max_component(graph)
+
+    nodes = graph.number_of_nodes()
+    edges = graph.number_of_edges()
+    density = nx.density(graph)
+    degree_centrality = nx.degree_centrality(graph)
+    avg_degree = edges/nodes
+    con_components = nx.number_connected_components(graph)
+    degree_dist = get_degree_dist(graph)
+
+    avg_clustering_coef = nx.average_clustering(max_comp)
+    bet_cen, edge_bet_cen, clo_cen, eig_cen = centrality_analysis(max_comp)
+    diameter = nx.diameter(max_comp)
+    # TODO: trovare come implementare in maniera proficua Shortest Path
+    # shortest_path_length = nx.shortest_path_length(max_comp)
+
+    edge_probability_ER = 2*edges/(nodes*(nodes-1))
+    min_degree_BA = edges/nodes
+
+
+
+
+    print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
+                  con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
+                  clo_cen, eig_cen, diameter, edge_probability_ER, min_degree_BA)
+
+
+
 
 main()
 
