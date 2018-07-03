@@ -2,6 +2,7 @@ from typing import Dict
 import requests
 import json
 import time
+import traceback
 from collections import deque
 from data_structures import Repo, CustomJsonEncoder
 
@@ -9,16 +10,13 @@ CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
 queue = list()
 visited_repos = set()
-# For requests using Basic Authentication or OAuth, you can make up to 5000 requests per hour.
-# t_min = 5000/(60*60) = 1.38s
-
 
 # ottengo lista contributors della repository in analisi e rispettivi commits (passata come argomento)
 def get_repo_contributors(owner, repo):
     if repo in visited_repos:
         return
     # Timer di attesa per richiesta API github
-    time.sleep(2)
+    time.sleep(0.3)
     response = requests.get(CONTRIBUTORS_ENDPOINT.format(owner, repo), auth=('socialNetworkAnalysis', 'XTfLGSS3'))
     # manage 204 HTTP response returning None value
     if response.status_code != 200:
@@ -46,7 +44,6 @@ def get_contributor_info(contributor_dic: Dict):
 
 # ottengo nome_repo, lang_repo
 def get_user_repos(user):
-    # Timer di attesa t per richiesta API github
     response = requests.get(REPOS_ENDPOINT.format(user), auth=('socialNetworkAnalysis', 'XTfLGSS3'))
     print(response)
     repos_json = response.json()
@@ -66,7 +63,7 @@ def get_repos_info(repos_dic: Dict):
 # Appends to user_dict five_contributors of the repo repo_name
 # It finally enqueues every contributor in a queue and returns this queue
 def save_user_and_enqueue_it(five_contributors, repo_name, language, user_dict):
-    if five_contributors is None or repo_name in visited_repos:
+    if five_contributors is None: 
         return
     for user in five_contributors:
         username = user[0]
@@ -80,7 +77,7 @@ def save_user_and_enqueue_it(five_contributors, repo_name, language, user_dict):
 
 def save_data(data, file):
     json.dump(data, open(file, "w"), cls=CustomJsonEncoder)
-    with open("queue.py", "a") as q:
+    with open("queue_luglio.py", "a") as q:
         q.write("queue = ")
         q.write(str(queue))
 
@@ -122,9 +119,12 @@ def main():
         save_user_queue_contributors(user_dict)
         save_user_queue_contributors(user_dict)
         save_user_queue_contributors(user_dict)
-
+        save_user_queue_contributors(user_dict)
+        save_user_queue_contributors(user_dict)
+    except:
+        print(traceback.format_exc())
     finally:
-        save_data(user_dict, "depth3.json")
+        save_data(user_dict, "luglio.json")
 
 
 if __name__ == "__main__":
