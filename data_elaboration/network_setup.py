@@ -1,5 +1,5 @@
-import json
 import networkx as nx
+import json
 import csv
 import collections
 
