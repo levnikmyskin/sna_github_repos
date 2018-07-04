@@ -11,6 +11,7 @@ REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
 queue = list()
 visited_repos = set()
 
+
 # ottengo lista contributors della repository in analisi e rispettivi commits (passata come argomento)
 def get_repo_contributors(owner, repo):
     if repo in visited_repos:
