@@ -3,8 +3,7 @@ import requests
 import json
 import time
 import traceback
-from collections import deque
-from data_structures import Repo, CustomJsonEncoder
+from data_elaboration.data_retrieval.data_structures import Repo, CustomJsonEncoder
 
 CONTRIBUTORS_ENDPOINT = "https://api.github.com/repos/{}/{}/stats/contributors"
 REPOS_ENDPOINT = "https://api.github.com/users/{}/repos"
@@ -111,7 +110,7 @@ def init_crawler():
     return get_first_five_contributors(repo_contributors)
 
 
-def main():
+def run_crawler():
     user_dict = dict()
     try:
         init_five_contributors = init_crawler()
@@ -126,8 +125,3 @@ def main():
         print(traceback.format_exc())
     finally:
         save_data(user_dict, "luglio2.json")
-
-
-if __name__ == "__main__":
-    main()
-

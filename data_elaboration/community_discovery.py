@@ -7,23 +7,6 @@ import pquality
 
 # TODO: tutto questo schifo d'importazione da sistemare
 
-# TODO: AH NO. Dobbiamo fare Community Evaluation SOLAMENTE SUL CRAWLED DATA top
-
-# TODO: far sì che qui vengano importati le reti impostate in network_setup. Per velocità adesso utilizzo
-# delle reti generate random
-graph_ba = nx.barabasi_albert_graph(100, 5, seed=None)
-graph_crawled = "QUA_IMPORTARE_L_CRWALED_GRAPH"
-
-
-# def get_girvan_newman(graph, iteration):
-#     girvan_list = list()
-#     comm_generator = community.girvan_newman(graph)
-#     limited = itertools.takewhile(lambda t: len(t) <= iteration, comm_generator)
-#     for communities in limited:
-#         girvan_list.append(tuple(sorted(c) for c in communities))
-#
-#     return girvan_list
-
 
 def get_girvan_newman(graph, iteration):
     gn_hierarchy = community.girvan_newman(graph)
@@ -47,9 +30,9 @@ def get_label_prop(graph):
 
     return comm_generator
 
-
+# TODO: Capire se avendo messo il peso sui commits ho fatto cosa buona e giusta
 def get_louvain(graph):
-    partition = community_louvain.best_partition(graph)
+    partition = community_louvain.best_partition(graph, weight="Commits")
 
     list_nodes = list()
     for community in set(partition.values()):
@@ -83,39 +66,47 @@ def get_partition_quality(graph, partition):
     print(results["Indexes"])
 
 
-def main():
-    clique_part = get_k_clique(graph_ba, 3)
-    girv_part = get_girvan_newman(graph_ba, 10)
-    label_part = get_label_prop(graph_ba)
-    louv_part = get_louvain(graph_ba)
-    demon_part = get_demon(graph_ba)
+def run_community_discovery_task(graph):
+    clique_part = get_k_clique(graph, 3)
+    girv_part = get_girvan_newman(graph, 10)
+    label_part = get_label_prop(graph)
+    louv_part = get_louvain(graph)
+    demon_part = get_demon(graph)
 
     print_results(clique_part, girv_part, label_part, louv_part, demon_part)
+    # run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part)
 
     print("\n")
     print("Clique Evaluation")
-    get_partition_quality(graph_ba, clique_part)
+    get_partition_quality(graph, clique_part)
+    print("____________________________________________________________")
+
+
+
+
+def run_pquality_test(graph, clique_part, girv_part, label_part, louv_part,demon_part):
+    print("\n")
+    print("Clique Evaluation")
+    get_partition_quality(graph, clique_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Girvan-Newman Evaluation")
-    get_partition_quality(graph_ba, girv_part)
+    get_partition_quality(graph, girv_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Label Propagation Evaluation")
-    get_partition_quality(graph_ba, label_part)
+    get_partition_quality(graph, label_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Louvain Evaluation")
-    get_partition_quality(graph_ba, louv_part)
+    get_partition_quality(graph, louv_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Demon Evaluation")
-    get_partition_quality(graph_ba, demon_part)
+    get_partition_quality(graph, demon_part)
     print("____________________________________________________________")
 
-
-main()

@@ -1,41 +1,6 @@
 import networkx as nx
-import json
 import csv
 import collections
-
-
-def get_repo_user_dict(data):
-    repo_dict = dict()
-    for user, repoList in data.items():
-        for repo in repoList:
-            for repoName, val in repo.items():
-                a = repo_dict.setdefault(repoName, set())
-                # a.append((user, val["commits"]))
-                # ho rimosso i pesi per semplicità
-                a.add((user, ))
-
-    return repo_dict
-
-
-def get_coll_dict(repo_dict):
-    coll_dict = dict()
-    for repoName, userList in repo_dict.items():
-        for user in userList:
-            user_collaborators = coll_dict.setdefault(user[0], [])
-            _userList = userList.copy()
-            _userList.remove(user)
-            for collaborator in _userList:
-                user_collaborators.append(collaborator)
-
-    return coll_dict
-
-
-def create_network_from_json(coll_dict):
-    graph = nx.Graph()
-    for user, userList in coll_dict.items():
-        graph.add_edges_from(([(user, collaborator) for collaborator in userList]))
-
-    return graph
 
 
 def create_network_from_csv(csvfile):
@@ -46,14 +11,6 @@ def create_network_from_csv(csvfile):
             graph.add_edge(elem[0], elem[1], weight=elem[2], language=elem[3])
 
     return graph
-
-
-def create_csv(coll_dict):
-    with open("testCSV.csv", "w", newline="") as csvfile:
-        writer = csv.writer(csvfile, delimiter=";", quotechar="|", quoting=csv.QUOTE_MINIMAL)
-        for userName, collaboratorList in coll_dict.items():
-            for collaborator in collaboratorList:
-                writer.writerow([userName, collaborator[0]])
 
 
 def define_max_component(graph):
@@ -86,15 +43,11 @@ def get_degree_dist(graph):
 
 
 def generate_comparable_graphs(nodes, probability, min_degree):
-    comparable_graphs = list()
 
     graph_ER = nx.fast_gnp_random_graph(nodes, probability, directed=False)
     graph_BA = nx.barabasi_albert_graph(nodes, int(min_degree), seed=None)
 
-    comparable_graphs.append((graph_ER, "Graph ER"))
-    comparable_graphs.append((graph_BA, "Graph BA"))
-
-    return comparable_graphs
+    return graph_ER, graph_BA
 
 
 def run_analytical_task(graph):
@@ -149,27 +102,17 @@ def generate_edgelist(comparable_graphs):
     nx.write_edgelist(comparable_graphs[1], "outBA.csv", delimiter=";")
 
 
-def main():
+def get_coeff_from_net(graph):
+    nodes = graph.number_of_nodes()
+    edges = graph.number_of_edges()
 
-    csvfile = "CSVlabel.csv"
+    edge_probability_ER = 2 * edges / (nodes * (nodes - 1))
+    min_degree_BA = edges / nodes
 
+    return nodes, edge_probability_ER, min_degree_BA
+
+
+def run_setup(csvfile):
     graph_crawled = create_network_from_csv(csvfile)
 
-    nodes = graph_crawled.number_of_nodes()
-    edges = graph_crawled.number_of_edges()
-
-    edge_probability_ER = 2*edges/(nodes*(nodes-1))
-    min_degree_BA = edges/nodes
-
-    run_analytical_task(graph_crawled)
-
-    comparable_graphs = generate_comparable_graphs(nodes, edge_probability_ER, min_degree_BA)
-
-    for graph in comparable_graphs:
-        print("Analyzing graph: ", graph[1])
-        run_analytical_task(graph[0])
-
-    generate_edgelist(comparable_graphs)
-
-
-main()
+    return graph_crawled
