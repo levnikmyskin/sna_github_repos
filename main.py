@@ -6,7 +6,7 @@ from data_elaboration.net_elaboration import get_json_to_csv
 from data_elaboration.community_discovery import run_community_discovery_task
 from data_elaboration.epidemic_analysis import do_epidemic_analysis
 
-csv_file = "/home/andrea/Documenti/Università/Social Network Analysis/sna_github_repos/data_elaboration/network.csv"
+csv_file = "CSVlabel.csv"
 json_file = "luglio2.json"
 
 
@@ -32,12 +32,12 @@ def main():
     # run_crawler()
     # get_json_to_csv(json_file)
     graph_crawled, graph_er, graph_ba = run_graph_creation_and_analysis()
-    # Converto nomi nodi in INT perché pquality gestisce solo int (credo)
-    # eventualmente problema di mappatura (tra label str e label int, magari no , magari sì.. controllare)
+
     crawled_int = nx.convert_node_labels_to_integers(graph_crawled)
     graph_list = list((crawled_int, graph_er, graph_ba))
     for graph in graph_list:
         run_community_discovery_task(graph)
+
     do_epidemic_analysis(graph_crawled)
 
 
