@@ -4,7 +4,7 @@ from data_elaboration.network_setup import run_setup, run_analytical_task, get_c
 from data_elaboration.data_retrieval.get_data import run_crawler
 from data_elaboration.net_elaboration import get_json_to_csv
 from data_elaboration.community_discovery import run_community_discovery_task
-from data_elaboration.epidemic_analysis import do_epidemic_analysis
+from data_elaboration.epidemic_analysis import get_epidemic_analysis
 
 csv_file = "CSVlabel.csv"
 json_file = "luglio2.json"
@@ -38,7 +38,7 @@ def main():
     for graph in graph_list:
         run_community_discovery_task(graph)
 
-    do_epidemic_analysis(graph_crawled)
+    get_epidemic_analysis(graph_crawled)
 
 
 main()
