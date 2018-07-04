@@ -8,7 +8,7 @@ def create_network_from_csv(csvfile):
     with open(csvfile, "r") as csvfile:
         data_list = list(csv.reader(csvfile, delimiter=";"))
         for elem in data_list:
-            graph.add_edge(elem[0], elem[1], weight=elem[2], language=elem[3])
+            graph.add_edge(elem[0], elem[1], weight=int(elem[2]), language=elem[3])
 
     return graph
 

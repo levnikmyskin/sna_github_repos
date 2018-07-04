@@ -7,13 +7,13 @@ from ndlib.viz.mpl.DiffusionTrend import DiffusionTrend
 
 
 def do_epidemic_analysis(graph):
-    csvfile = "network.csv"
-
-    graph_ba = nx.barabasi_albert_graph(1000, 5, seed=None)
-    graph_er = nx.erdos_renyi_graph(1000, 0.1)
+    # csvfile = "network.csv"
+    #
+    # graph_ba = nx.barabasi_albert_graph(1000, 5, seed=None)
+    # graph_er = nx.erdos_renyi_graph(1000, 0.1)
 
     model = sir.SIRModel(graph)
-    print(json.dumps(model.parameters, indent=2))
+    # print(json.dumps(model.parameters, indent=2))
     # da qui capisco quali sono i parametri necessari al modello (in questo caso Infection & Recovery Rate ovviamente
     # per settare i parametri istanzio un oggetto configuration a cui poi passo i parametri necessari
     

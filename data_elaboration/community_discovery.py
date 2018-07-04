@@ -22,7 +22,7 @@ def get_k_clique(graph, k):
 
     return clique
 
-
+# TODO: capire differenza fra due modelli label_prop
 def get_label_prop(graph):
     # comm_generator = community.label_propagation_communities(graph)
     comm_generator = community.asyn_lpa_communities(graph)
@@ -32,7 +32,7 @@ def get_label_prop(graph):
 
 # TODO: Capire se avendo messo il peso sui commits ho fatto cosa buona e giusta
 def get_louvain(graph):
-    partition = community_louvain.best_partition(graph, weight="Commits")
+    partition = community_louvain.best_partition(graph, weight="weight")
 
     list_nodes = list()
     for community in set(partition.values()):
@@ -74,17 +74,10 @@ def run_community_discovery_task(graph):
     demon_part = get_demon(graph)
 
     print_results(clique_part, girv_part, label_part, louv_part, demon_part)
-    # run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part)
-
-    print("\n")
-    print("Clique Evaluation")
-    get_partition_quality(graph, clique_part)
-    print("____________________________________________________________")
+    run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part)
 
 
-
-
-def run_pquality_test(graph, clique_part, girv_part, label_part, louv_part,demon_part):
+def run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part):
     print("\n")
     print("Clique Evaluation")
     get_partition_quality(graph, clique_part)
@@ -109,4 +102,3 @@ def run_pquality_test(graph, clique_part, girv_part, label_part, louv_part,demon
     print("Demon Evaluation")
     get_partition_quality(graph, demon_part)
     print("____________________________________________________________")
-
