@@ -72,6 +72,8 @@ def run_analytical_task(graph):
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
                   clo_cen, eig_cen, diameter)
 
+    return degree_centrality, edge_bet_cen
+
 
 def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
