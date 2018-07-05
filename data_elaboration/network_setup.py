@@ -91,8 +91,8 @@ def generate_comparable_graphs(nodes, probability, min_degree):
     graph_ER = nx.fast_gnp_random_graph(nodes, probability, directed=False)
     graph_BA = nx.barabasi_albert_graph(nodes, int(min_degree), seed=None)
 
-    comparable_graphs.append(graph_ER)
-    comparable_graphs.append(graph_BA)
+    comparable_graphs.append((graph_ER, "Graph ER"))
+    comparable_graphs.append((graph_BA, "Graph BA"))
 
     return comparable_graphs
 
@@ -166,10 +166,8 @@ def main():
     comparable_graphs = generate_comparable_graphs(nodes, edge_probability_ER, min_degree_BA)
 
     for graph in comparable_graphs:
-        # TODO: qui vorrei che stampasse al posto della riga il nome del network in analisi: tipo alla prima
-        # iterazione Graph_ER, alla seconda Graph_BA (sono i nomi degli elementi nella lista comparable_graphs...)
-        print("____________________________________________________________________________________")
-        run_analytical_task(graph)
+        print("Analyzing graph: ", graph[1])
+        run_analytical_task(graph[0])
 
     generate_edgelist(comparable_graphs)
 
