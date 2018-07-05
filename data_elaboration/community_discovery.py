@@ -78,7 +78,7 @@ def run_community_discovery_task(graph):
 
     run_nf1_evaluation(partition_list)
 
-    # return partition_list
+    return partition_list
 
 
 def run_nf1_evaluation(partition_list):
