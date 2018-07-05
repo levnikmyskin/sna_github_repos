@@ -66,7 +66,7 @@ def run_analytical_task(graph):
     diameter = nx.diameter(max_comp)
     # TODO: trovare come implementare in maniera proficua Shortest Path
     # magari implementare Average Path Length
-    shortest_path_length = nx.shortest_path_length(max_comp)
+    # shortest_path_length = nx.shortest_path_length(max_comp)
 
     print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen,

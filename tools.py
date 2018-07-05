@@ -24,3 +24,8 @@ def control_depth(data):
                 print("WARNING", repo)
                 quit()
             visited_repo.append(repo)
+
+
+def get_weighted_pairs(coll_dict):
+    pass
+
