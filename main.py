@@ -1,5 +1,5 @@
 import networkx as nx
-from data_elaboration.network_setup import run_setup, run_analytical_task, get_coeff_from_net,\
+from data_elaboration.network_analysis import run_setup, run_analytical_task, get_coeff_from_net,\
     generate_comparable_graphs, generate_edgelist
 from data_elaboration.data_retrieval.get_data import run_crawler
 from data_elaboration.net_elaboration import get_csv_from_json

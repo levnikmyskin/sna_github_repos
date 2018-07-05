@@ -82,7 +82,7 @@ def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_deg
     print("Density: " + str(density))
     print("Max Degree: " + str(max(degree_dist)[0]))
 
-    print("Degree Centrality: " + str(get_sorted_dict(degree_centrality)[:1]))
+    print("Degree Centrality: " + str(get_sorted_dict(degree_centrality)[:5]))
     print("Average Degree: " + str(avg_degree))
     print("Connected Components: " + str(con_components))
 
