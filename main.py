@@ -7,7 +7,7 @@ from data_elaboration.community_discovery import run_community_discovery_task
 from data_elaboration.epidemic_analysis import get_epidemic_analysis
 from data_elaboration.tie_stregth_analysis import run_tie_stregth_analysis
 
-csv_file = "CSVlabel.csv"
+csv_file = "/home/andrea/Documenti/Università/Social Network Analysis/sna_github_repos/data_elaboration/CSVlabel10k.csv"
 json_file = "luglio2.json"
 
 
@@ -40,11 +40,11 @@ def main():
     # get_csv_from_json(json_file)
     graph_crawled, graph_er, graph_ba = run_graph_creation_and_analysis()
 
-    crawled_int = nx.convert_node_labels_to_integers(graph_crawled)
-
-    graph_list = list((crawled_int, graph_er, graph_ba))
-    for graph in graph_list:
-        run_community_discovery_task(graph)
+    # crawled_int = nx.convert_node_labels_to_integers(graph_crawled)
+    #
+    # graph_list = list((crawled_int, graph_er, graph_ba))
+    # for graph in graph_list:
+    #     run_community_discovery_task(graph)
     #
     # get_epidemic_analysis(graph_crawled)
 
