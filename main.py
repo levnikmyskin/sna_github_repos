@@ -17,18 +17,17 @@ def run_graph_creation_and_analysis():
     # graph_crawled = nx.convert_node_labels_to_integers(graph_crawled)
 
     degree_centrality, edge_bet_centrality = run_analytical_task(graph_crawled)
+    run_tie_stregth_analysis(graph_crawled, degree_centrality, edge_bet_centrality)
+
 
     nodes, p_er, m_ba = get_coeff_from_net(graph_crawled)
     graph_er, graph_ba = generate_comparable_graphs(nodes, p_er, m_ba)
     comparable_graph_list = list((graph_er, graph_ba))
-    run_tie_stregth_analysis(graph_crawled, degree_centrality, edge_bet_centrality)
-
 
     for graph in comparable_graph_list:
         print("____________________________________________________________________________________")
         degree_centrality, edge_bet_centrality = run_analytical_task(graph)
         run_tie_stregth_analysis(graph, degree_centrality, edge_bet_centrality)
-
 
     # genera file json che descriva il network
     # generate_edgelist(comparable_graph_list)
@@ -38,7 +37,7 @@ def run_graph_creation_and_analysis():
 
 def main():
     # run_crawler()
-    get_csv_from_json(json_file)
+    # get_csv_from_json(json_file)
     graph_crawled, graph_er, graph_ba = run_graph_creation_and_analysis()
 
     crawled_int = nx.convert_node_labels_to_integers(graph_crawled)
@@ -51,3 +50,13 @@ def main():
 
 
 main()
+
+# workflow:
+# 0 crawler (task1)
+# 1 creazione graph_crawled
+# 2 analisi run_analytical_task su graph_crawleed (task1)
+# 3 analisi tie_strength  (task 3.c)
+# 3 crazione modelli sintetici
+# 4 analisi modello + tie_stregth per i modelli sintetici (task2)
+# 5 per ogni modello (crawler + sintetici) analisi Community Discovery (task3.a)
+# 6 per crawled run epidemic_analysis (task3.b)
