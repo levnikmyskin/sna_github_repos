@@ -61,19 +61,22 @@ def run_analytical_task(graph):
     con_components = nx.number_connected_components(graph)
     degree_dist = get_degree_dist(graph)
 
+    max_comp_nodes = max_comp.order()
+    max_comp_edges = max_comp.size()
     avg_clustering_coef = nx.average_clustering(max_comp)
     bet_cen, edge_bet_cen, clo_cen, eig_cen = centrality_analysis(max_comp)
     diameter = nx.diameter(max_comp)
     # TODO: trovare come implementare in maniera proficua Shortest Path
     # magari implementare Average Path Length
-    shortest_path_length = nx.shortest_path_length(max_comp)
+    # shortest_path_length = nx.shortest_path_length(max_comp)
 
-    print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
-                  con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
-                  clo_cen, eig_cen, diameter)
+    print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_edges, degree_centrality, avg_degree,
+                  con_components, avg_clustering_coef, bet_cen, edge_bet_cen, clo_cen, eig_cen, diameter)
+
+    return degree_centrality, edge_bet_cen
 
 
-def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_degree,
+def print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_edges, degree_centrality, avg_degree,
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
                   clo_cen, eig_cen, diameter):
     print("--- Network Analysis:")
@@ -82,12 +85,14 @@ def print_results(nodes, edges, density, degree_dist, degree_centrality, avg_deg
     print("Density: " + str(density))
     print("Max Degree: " + str(max(degree_dist)[0]))
 
-    print("Degree Centrality: " + str(get_sorted_dict(degree_centrality)[:1]))
+    print("Degree Centrality: " + str(get_sorted_dict(degree_centrality)[:5]))
     print("Average Degree: " + str(avg_degree))
     print("Connected Components: " + str(con_components))
 
     print("\n")
     print("---Biggest Component Analysis:")
+    print("Max Comp Nodes: " + str(max_comp_nodes))
+    print("Max Comp Edges: " + str(max_comp_edges))
     print("Average Clustering Coefficient: " + str(avg_clustering_coef))
     print("Betweenness Centrality : " + str(get_sorted_dict(bet_cen)[:1]))
     print("Edge Betweenness Centrality : " + str(get_sorted_dict(edge_bet_cen)[:1]))

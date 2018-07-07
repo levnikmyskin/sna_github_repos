@@ -1,11 +1,9 @@
-import networkx as nx
 from networkx.algorithms import community
 from networkx.algorithms.community import k_clique_communities
 from community import community_louvain
 import demon as d
 import pquality
-
-# TODO: tutto questo schifo d'importazione da sistemare
+from nf1 import NF1
 
 
 def get_girvan_newman(graph, iteration):
@@ -30,7 +28,6 @@ def get_label_prop(graph):
 
     return comm_generator
 
-# TODO: Capire se avendo messo il peso sui commits ho fatto cosa buona e giusta
 def get_louvain(graph):
     partition = community_louvain.best_partition(graph, weight="weight")
 
@@ -47,7 +44,7 @@ def get_louvain(graph):
 
 def get_demon(graph):
     dm = d.Demon(graph=graph, epsilon=0.25, min_community_size=3)
-    # TODO: boh ma che cazzo è sta barra io non la voglio lol
+    # TODO: ma questa loading bar vorrei toglierla ma non ho voglia di cercare come...
     communities = dm.execute()
 
     return communities
@@ -76,6 +73,34 @@ def run_community_discovery_task(graph):
     print_results(clique_part, girv_part, label_part, louv_part, demon_part)
     run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part)
 
+    partition_list = list(((clique_part, "Clique_part"), (girv_part, "Girv_part"), (label_part, "Label_part"),
+                           (louv_part, "Louv_part"), (demon_part, "Demon_part")))
+
+    run_nf1_evaluation(partition_list)
+
+    return partition_list
+
+
+def run_nf1_evaluation(partition_list):
+    for partition in partition_list:
+        _partition_list_copy = partition_list.copy()
+        _partition_list_copy.remove(partition)
+        index = partition_list.index([partition][0])
+
+        for comparable_partition in _partition_list_copy[index:]:
+            nf = NF1(partition[0], comparable_partition[0])
+            res = nf.summary()
+
+            print(f"Comparison between {partition[1]} and {comparable_partition[1]}:")
+            print(res["scores"])
+            print("____________________________________________________")
+
+            # print("Details:")
+            # print("\n")
+            # print(res["details"])
+            # print("____________________________________________________")
+            # print("\n")
+
 
 def run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part):
     print("\n")
@@ -102,3 +127,5 @@ def run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demo
     print("Demon Evaluation")
     get_partition_quality(graph, demon_part)
     print("____________________________________________________________")
+
+
