@@ -12,6 +12,7 @@ def run_tie_stregth_analysis(graph, degree_centrality, edge_bet_centrality):
     remove_by_degree_cen(graph_copy_1, degree_centrality)
     print("\n")
     remove_by_bet_cen(grah_copy_2, edge_bet_centrality)
+    print("\n")
 
 
 def remove_by_degree_cen(graph, degree_centrality):

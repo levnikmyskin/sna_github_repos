@@ -8,7 +8,7 @@ from data_elaboration.epidemic_analysis import get_epidemic_analysis
 from data_elaboration.tie_stregth_analysis import run_tie_stregth_analysis
 from pprint import pprint
 
-csv_file = "/home/andrea/Documenti/Università/Social Network Analysis/sna_github_repos/edgelistNx.csv"
+csv_file = "/home/andrea/Documenti/Università/Social Network Analysis/sna_github_repos/data_elaboration/CSVlabel10k.csv"
 # json_file = "/home/andrea/Documenti/Università/Social Network Analysis/sna_github_repos/data_elaboration/luglio_merged.json"
 
 
@@ -18,16 +18,16 @@ def run_graph_creation_and_analysis():
     graph_crawled = nx.convert_node_labels_to_integers(graph_crawled)
 
     degree_centrality, edge_bet_centrality = run_analytical_task(graph_crawled)
-    # run_tie_stregth_analysis(graph_crawled, degree_centrality, edge_bet_centrality)
-    #
-    # nodes, p_er, m_ba = get_coeff_from_net(graph_crawled)
-    # graph_er, graph_ba = generate_comparable_graphs(nodes, p_er, m_ba)
-    # comparable_graph_list = list((graph_er, graph_ba))
-    #
-    # for graph in comparable_graph_list:
-    #     print("____________________________________________________________________________________")
-    #     degree_centrality, edge_bet_centrality = run_analytical_task(graph)
-    #     run_tie_stregth_analysis(graph, degree_centrality, edge_bet_centrality)
+    run_tie_stregth_analysis(graph_crawled, degree_centrality, edge_bet_centrality)
+
+    nodes, p_er, m_ba = get_coeff_from_net(graph_crawled)
+    graph_er, graph_ba = generate_comparable_graphs(nodes, p_er, m_ba)
+    comparable_graph_list = list((graph_er, graph_ba))
+
+    for graph in comparable_graph_list:
+        print("____________________________________________________________________________________")
+        degree_centrality, edge_bet_centrality = run_analytical_task(graph)
+        run_tie_stregth_analysis(graph, degree_centrality, edge_bet_centrality)
 
     # genera file json che descriva il network
     # generate_edgelist(comparable_graph_list)
@@ -41,10 +41,12 @@ def main():
     graph_crawled, graph_er, graph_ba = run_graph_creation_and_analysis()
 
 
-    # graph_list = list((graph_crawled, graph_er, graph_ba))
+    graph_list = list((graph_crawled, graph_er, graph_ba))
     comp_list = list()
-    # for graph in graph_list:
-        # comp_list.append(run_community_discovery_task(graph))
+    print("________________________________________________________________________________________")
+    print("Community Discovery Task --------")
+    for graph in graph_list:
+        comp_list.append(run_community_discovery_task(graph))
 
     # get_epidemic_analysis(graph_crawled)
 

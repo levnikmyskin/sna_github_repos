@@ -6,10 +6,10 @@ from tools import prepare_data_for_rust
 
 
 def incredible_high_speed_diam_computation(shortest_path):
-    diameter_list = list()
+    diameter_list = set()
     for path_list in shortest_path:
         for path_length in path_list[1].values():
-            diameter_list.append(path_length)
+            diameter_list.add(path_length)
 
     return max(diameter_list)
 
@@ -46,13 +46,9 @@ def define_max_component(graph):
 
 
 def centrality_analysis(graph):
-    print("BET CEN")
     bet_cen = nx.betweenness_centrality(graph)
-    print("EDG EBT CEN")
     edge_bet_cen = nx.edge_betweenness_centrality(graph)
-    print("CLO CEN")
     clo_cen = nx.closeness_centrality(graph)
-    print("EIGEN CENT")
     eig_cen = nx.eigenvector_centrality(graph)
 
     return bet_cen, edge_bet_cen, clo_cen, eig_cen
@@ -94,22 +90,21 @@ def run_analytical_task(graph):
     max_comp_nodes = max_comp.order()
     max_comp_edges = max_comp.size()
     avg_clustering_coef = nx.average_clustering(max_comp)
-    # bet_cen, edge_bet_cen, clo_cen, eig_cen = centrality_analysis(max_comp)
-    print("Diameter...")
-    diameter = nx.diameter(max_comp)
+    bet_cen, edge_bet_cen, clo_cen, eig_cen = centrality_analysis(max_comp)
+    # diameter = nx.diameter(max_comp)
     # shortest_path_length = nx.shortest_path_length(max_comp)
-    print("Shortest Path...")
-    shortest_path_length = rust_shortest_path(graph)
+    shortest_path_length = rust_shortest_path(max_comp)
+    diameter = incredible_high_speed_diam_computation(shortest_path_length)
 
-    # print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_edges, degree_centrality, avg_degree,
-    #               con_components, avg_clustering_coef, bet_cen, edge_bet_cen, clo_cen, eig_cen, diameter, shortest_path_length)
+    print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_edges, degree_centrality, avg_degree,
+                  con_components, avg_clustering_coef, bet_cen, edge_bet_cen, clo_cen, eig_cen, shortest_path_length, diameter)
 
-    # return degree_centrality, edge_bet_cen
+    return degree_centrality, edge_bet_cen
 
 
 def print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_edges, degree_centrality, avg_degree,
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
-                  clo_cen, eig_cen, diameter, shortest_path_length):
+                  clo_cen, eig_cen, shortest_path_length, diameter):
     print("--- Network Analysis:")
     print("Nodes: " + str(nodes))
     print("Edges: " + str(edges))
