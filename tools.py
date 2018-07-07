@@ -2,8 +2,6 @@ import json
 import collections
 from networkx import Graph
 
-data = json.load(open("data2135.json", "r"))
-
 
 def get_most_freq_lang(data):
     language_list = list()
