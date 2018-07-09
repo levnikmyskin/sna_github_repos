@@ -2,7 +2,7 @@ import networkx as nx
 import csv
 import collections
 import networkxrust
-from tools import prepare_data_for_rust
+from tools import prepare_data_for_rust, chunks_for_rust
 
 
 def incredible_high_speed_diam_computation(shortest_path):
@@ -14,10 +14,6 @@ def incredible_high_speed_diam_computation(shortest_path):
     return max(diameter_list)
 
 
-def chunks_for_rust(adj):
-    for i in range(0, len(adj), 200):
-        yield adj[i:i+200]
-
 
 def rust_shortest_path(graph):
     nodes, adj = prepare_data_for_rust(graph)
@@ -26,7 +22,8 @@ def rust_shortest_path(graph):
     for chunk in chunks_for_rust(adj[200:]):
         e.add(chunk)
 
-    return e.shortest_path_length(1)
+    e.shortest_path_length()
+    return e
 
 
 def create_network_from_csv(csvfile):

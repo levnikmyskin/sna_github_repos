@@ -3,14 +3,16 @@ from networkx.algorithms.community import k_clique_communities
 from community import community_louvain
 import demon as d
 import pquality
+import itertools
 from nf1 import NF1
+import json
 
 
-def get_girvan_newman(graph, iteration):
+def get_girvan_newman(graph, num_components):
     gn_hierarchy = community.girvan_newman(graph)
-
-    for x in range(iteration):
-        coms_gn = [tuple(x) for x in next(gn_hierarchy)]
+    coms_gn = tuple()
+    for partitions in itertools.islice(gn_hierarchy, num_components):
+        coms_gn = partitions
 
     return coms_gn
 
@@ -20,6 +22,7 @@ def get_k_clique(graph, k):
 
     return clique
 
+
 # TODO: capire differenza fra due modelli label_prop
 def get_label_prop(graph):
     # comm_generator = community.label_propagation_communities(graph)
@@ -27,6 +30,7 @@ def get_label_prop(graph):
     comm_generator = list(comm_generator)
 
     return comm_generator
+
 
 def get_louvain(graph):
     partition = community_louvain.best_partition(graph, weight="weight")
@@ -64,11 +68,20 @@ def get_partition_quality(graph, partition):
 
 
 def run_community_discovery_task(graph):
+    girv_part = get_girvan_newman(graph, 5)
+    json.dump(girv_part, open("girvan.json", 'w'))
+
     clique_part = get_k_clique(graph, 3)
-    girv_part = get_girvan_newman(graph, 10)
+    json.dump(girv_part, open("clique.json", 'w'))
+
     label_part = get_label_prop(graph)
+    json.dump(girv_part, open("labelpart.json", 'w'))
+
     louv_part = get_louvain(graph)
+    json.dump(girv_part, open("louvain.json", 'w'))
+
     demon_part = get_demon(graph)
+    json.dump(girv_part, open("demon.json", 'w'))
 
     print_results(clique_part, girv_part, label_part, louv_part, demon_part)
     run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part)
