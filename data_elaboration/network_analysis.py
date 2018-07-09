@@ -26,7 +26,7 @@ def rust_shortest_path(graph):
     for chunk in chunks_for_rust(adj[200:]):
         e.add(chunk)
 
-    return e.shortest_path_length()
+    return e.shortest_path_length(1)
 
 
 def create_network_from_csv(csvfile):
@@ -46,9 +46,13 @@ def define_max_component(graph):
 
 
 def centrality_analysis(graph):
+    print("BET")
     bet_cen = nx.betweenness_centrality(graph)
+    print("EDGE BET")
     edge_bet_cen = nx.edge_betweenness_centrality(graph)
+    print("CLO CEN")
     clo_cen = nx.closeness_centrality(graph)
+    print("EIG CEN")
     eig_cen = nx.eigenvector_centrality(graph)
 
     return bet_cen, edge_bet_cen, clo_cen, eig_cen
@@ -77,11 +81,13 @@ def generate_comparable_graphs(nodes, probability, min_degree):
 
 
 def run_analytical_task(graph):
+    print("STARTING..")
     max_comp = define_max_component(graph)
 
     nodes = graph.number_of_nodes()
     edges = graph.number_of_edges()
     density = nx.density(graph)
+    print("DEGGREE_CENT")
     degree_centrality = nx.degree_centrality(graph)
     avg_degree = 2*edges/nodes
     con_components = nx.number_connected_components(graph)
@@ -90,9 +96,11 @@ def run_analytical_task(graph):
     max_comp_nodes = max_comp.order()
     max_comp_edges = max_comp.size()
     avg_clustering_coef = nx.average_clustering(max_comp)
+    print("CENTRALITY MEASURES...")
     bet_cen, edge_bet_cen, clo_cen, eig_cen = centrality_analysis(max_comp)
     # diameter = nx.diameter(max_comp)
     # shortest_path_length = nx.shortest_path_length(max_comp)
+    print("COMPUTING SHORTEST PATH")
     shortest_path_length = rust_shortest_path(max_comp)
     diameter = incredible_high_speed_diam_computation(shortest_path_length)
 
@@ -130,8 +138,8 @@ def print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_e
 
 
 def generate_edgelist(comparable_graphs):
-    nx.write_edgelist(comparable_graphs[0], "outER.csv", delimiter=";")
-    nx.write_edgelist(comparable_graphs[1], "outBA.csv", delimiter=";")
+    nx.write_edgelist(comparable_graphs[0], "outERdefinitivo.csv", delimiter=";")
+    nx.write_edgelist(comparable_graphs[1], "outBAdefinitivo.csv", delimiter=";")
 
 
 def get_coeff_from_net(graph):

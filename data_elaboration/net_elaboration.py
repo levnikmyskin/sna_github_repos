@@ -56,7 +56,7 @@ def get_collaboration_data(repo_dict):
 
 
 def elaborate_and_save_csvEDGES_for_gephi(repo_dict):
-    with open('networkLuglio.csv', 'w', newline='') as csvfile:
+    with open('networkEDGESdefinitivo.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for repo_name, users in repo_dict.items():
             for user in users:
@@ -68,7 +68,7 @@ def elaborate_and_save_csvEDGES_for_gephi(repo_dict):
 
 
 def elaborate_and_save_csvNODES_for_gephi(user_dict):
-    with open('networkNODESluglio.csv', 'w', newline='') as csvfile:
+    with open('networkNODESdefinitivo.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for user, lang in user_dict.items():
             writer.writerow([[user][0], [user][0], lang[0]])
