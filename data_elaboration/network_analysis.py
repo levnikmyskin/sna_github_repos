@@ -26,7 +26,8 @@ def rust_shortest_path(graph):
     for chunk in chunks_for_rust(adj[200:]):
         e.add(chunk)
 
-    return e.shortest_path_length()
+    e.shortest_path_length()
+    return e
 
 
 def create_network_from_csv(csvfile):
