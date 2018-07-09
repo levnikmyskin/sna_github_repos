@@ -1,6 +1,7 @@
 import json
 import collections
 from networkx import Graph
+import networkxrust
 
 
 def get_most_freq_lang(data):
@@ -36,6 +37,18 @@ def prepare_data_for_rust(network):
         radj.append((k, n))
     return nodes, radj
 
+
+def chunks_for_rust(adj):
+    for i in range(0, len(adj), 200):
+        yield adj[i:i+200]
+
+def prepare_rust_elab(network):
+    nodes, adj = prepare_data_for_rust(network)
+    e = networkxrust.Elab(nodes, adj[:200])
+
+    for chunk in chunks_for_rust(adj[200:]):
+        e.add(chunk)
+    return e
 
 
 def merge_dictionaries(first_dict, second_dict):
