@@ -8,7 +8,7 @@ from data_elaboration.epidemic_analysis import get_epidemic_analysis
 from data_elaboration.tie_stregth_analysis import run_tie_stregth_analysis
 from pprint import pprint
 
-csv_file = "/home/andrea/Documenti/Università/Social Network Analysis/sna_github_repos/data_elaboration/CSVlabel10k.csv"
+csv_file = "edgelistNx.csv"
 # json_file = "/home/andrea/Documenti/Università/Social Network Analysis/sna_github_repos/data_elaboration/luglio_merged.json"
 
 
@@ -17,9 +17,9 @@ def run_graph_creation_and_analysis():
 
     graph_crawled = nx.convert_node_labels_to_integers(graph_crawled)
 
-    run_community_discovery_task(graph_crawled)
+    # run_community_discovery_task(graph_crawled)
 
-    # degree_centrality, edge_bet_centrality = run_analytical_task(graph_crawled)
+    degree_centrality, edge_bet_centrality = run_analytical_task(graph_crawled)
     # run_tie_stregth_analysis(graph_crawled, degree_centrality, edge_bet_centrality)
     #
     # nodes, p_er, m_ba = get_coeff_from_net(graph_crawled)
@@ -53,7 +53,6 @@ def main():
 
     # get_epidemic_analysis(graph_crawled)
 
-
 main()
 
 
@@ -62,7 +61,7 @@ main()
 # 1 creazione graph_crawled
 # 2 analisi run_analytical_task su graph_crawleed (task1)
 # 3 analisi tie_strength  (task 3.c)
-# 3 crazione modelli sintetici
+# 3 crazione modelli sintetici p=0.000241437356073 e m=2.87636394158
 # 4 analisi modello + tie_stregth per i modelli sintetici (task2)
 # 5 per ogni modello (crawler + sintetici) analisi Community Discovery (task3.a)
 # 6 per crawled run epidemic_analysis (task3.b)
