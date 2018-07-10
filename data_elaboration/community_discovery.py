@@ -4,32 +4,16 @@ from networkx.algorithms.community import k_clique_communities
 from community import community_louvain
 import demon as d
 import pquality
-
-# TODO: tutto questo schifo d'importazione da sistemare
-
-# TODO: AH NO. Dobbiamo fare Community Evaluation SOLAMENTE SUL CRAWLED DATA top
-
-# TODO: far sì che qui vengano importati le reti impostate in network_setup. Per velocità adesso utilizzo
-# delle reti generate random
-graph_ba = nx.barabasi_albert_graph(100, 5, seed=None)
-graph_crawled = "QUA_IMPORTARE_L_CRWALED_GRAPH"
+import itertools
+from nf1 import NF1
+import json
 
 
-# def get_girvan_newman(graph, iteration):
-#     girvan_list = list()
-#     comm_generator = community.girvan_newman(graph)
-#     limited = itertools.takewhile(lambda t: len(t) <= iteration, comm_generator)
-#     for communities in limited:
-#         girvan_list.append(tuple(sorted(c) for c in communities))
-#
-#     return girvan_list
-
-
-def get_girvan_newman(graph, iteration):
+def get_girvan_newman(graph, num_components):
     gn_hierarchy = community.girvan_newman(graph)
-
-    for x in range(iteration):
-        coms_gn = [tuple(x) for x in next(gn_hierarchy)]
+    coms_gn = tuple()
+    for partitions in itertools.islice(gn_hierarchy, num_components):
+        coms_gn = partitions
 
     return coms_gn
 
@@ -83,12 +67,21 @@ def get_partition_quality(graph, partition):
     print(results["Indexes"])
 
 
-def main():
-    clique_part = get_k_clique(graph_ba, 3)
-    girv_part = get_girvan_newman(graph_ba, 10)
-    label_part = get_label_prop(graph_ba)
-    louv_part = get_louvain(graph_ba)
-    demon_part = get_demon(graph_ba)
+def run_community_discovery_task(graph):
+    girv_part = get_girvan_newman(graph, 5)
+    json.dump(girv_part, open("girvan.json", 'w'))
+
+    clique_part = get_k_clique(graph, 3)
+    json.dump(girv_part, open("clique.json", 'w'))
+
+    label_part = get_label_prop(graph)
+    json.dump(girv_part, open("labelpart.json", 'w'))
+
+    louv_part = get_louvain(graph)
+    json.dump(girv_part, open("louvain.json", 'w'))
+
+    demon_part = get_demon(graph)
+    json.dump(girv_part, open("demon.json", 'w'))
 
     print_results(clique_part, girv_part, label_part, louv_part, demon_part)
 
@@ -117,5 +110,3 @@ def main():
     get_partition_quality(graph_ba, demon_part)
     print("____________________________________________________________")
 
-
-main()
