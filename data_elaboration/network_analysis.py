@@ -6,10 +6,10 @@ from tools import prepare_data_for_rust, chunks_for_rust
 
 
 def incredible_high_speed_diam_computation(shortest_path):
-    diameter_list = list()
+    diameter_list = set()
     for path_list in shortest_path:
         for path_length in path_list[1].values():
-            diameter_list.append(path_length)
+            diameter_list.add(path_length)
 
     return max(diameter_list)
 
@@ -27,13 +27,14 @@ def rust_shortest_path(graph):
 
 
 def create_network_from_csv(csvfile):
-    graph = nx.Graph()
+    graph = nx.MultiGraph()
     with open(csvfile, "r") as csvfile:
-        data_list = list(csv.reader(csvfile, delimiter=";"))
-        for elem in data_list:
+        data = csv.reader(csvfile, delimiter=";")
+        for elem in data:
             graph.add_edge(elem[0], elem[1], weight=float(elem[2]), language=elem[3])
 
     return graph
+
 
 
 def define_max_component(graph):
@@ -43,16 +44,17 @@ def define_max_component(graph):
 
 
 def centrality_analysis(graph):
-    print("BET CEN")
+    print("BET")
     bet_cen = nx.betweenness_centrality(graph)
-    print("EDG EBT CEN")
+    print("EDGE BET")
     edge_bet_cen = nx.edge_betweenness_centrality(graph)
     print("CLO CEN")
     clo_cen = nx.closeness_centrality(graph)
-    print("EIGEN CENT")
-    eig_cen = nx.eigenvector_centrality(graph)
+    # print("EIG CEN")
+    # # eig_cen = nx.eigenvector_centrality(graph)
+    # eig_cen = 0
 
-    return bet_cen, edge_bet_cen, clo_cen, eig_cen
+    return bet_cen, edge_bet_cen, clo_cen
 
 
 def get_sorted_dict(dictionary):
@@ -81,32 +83,38 @@ def run_analytical_task(graph):
     max_comp = define_max_component(graph)
 
     nodes = graph.number_of_nodes()
+    print("Nodes: " + str(nodes))
+
     edges = graph.number_of_edges()
+    print("Edges: " + str(edges))
+
     density = nx.density(graph)
+    print("Density: " + str(density))
+
     degree_centrality = nx.degree_centrality(graph)
     avg_degree = 2*edges/nodes
     con_components = nx.number_connected_components(graph)
     degree_dist = get_degree_dist(graph)
+    print("Max Degree: " + str(max(degree_dist)[0]))
 
     max_comp_nodes = max_comp.order()
     max_comp_edges = max_comp.size()
     avg_clustering_coef = nx.average_clustering(max_comp)
-    # bet_cen, edge_bet_cen, clo_cen, eig_cen = centrality_analysis(max_comp)
-    print("Diameter...")
-    diameter = nx.diameter(max_comp)
+    bet_cen, edge_bet_cen, clo_cen = centrality_analysis(max_comp)
+    # diameter = nx.diameter(max_comp)
     # shortest_path_length = nx.shortest_path_length(max_comp)
-    print("Shortest Path...")
-    shortest_path_length = rust_shortest_path(graph)
+    shortest_path_length = rust_shortest_path(max_comp)
+    diameter = incredible_high_speed_diam_computation(shortest_path_length)
 
-    # print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_edges, degree_centrality, avg_degree,
-    #               con_components, avg_clustering_coef, bet_cen, edge_bet_cen, clo_cen, eig_cen, diameter, shortest_path_length)
+    print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_edges, degree_centrality, avg_degree,
+                  con_components, avg_clustering_coef, bet_cen, edge_bet_cen, clo_cen, shortest_path_length, diameter)
 
-    # return degree_centrality, edge_bet_cen
+    return degree_centrality, edge_bet_cen
 
 
 def print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_edges, degree_centrality, avg_degree,
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen,
-                  clo_cen, eig_cen, diameter, shortest_path_length):
+                  clo_cen, shortest_path_length, diameter):
     print("--- Network Analysis:")
     print("Nodes: " + str(nodes))
     print("Edges: " + str(edges))
@@ -125,15 +133,15 @@ def print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_e
     print("Betweenness Centrality : " + str(get_sorted_dict(bet_cen)[:1]))
     print("Edge Betweenness Centrality : " + str(get_sorted_dict(edge_bet_cen)[:1]))
     print("Closeness Centrality : " + str(get_sorted_dict(clo_cen)[:1]))
-    print("Eigenvector Centrality : " + str(get_sorted_dict(eig_cen)[:1]))
+    # print("Eigenvector Centrality : " + str(get_sorted_dict(eig_cen)[:1]))
     print("Diameter: " + str(diameter))
     print("Shortest Path: " + str(shortest_path_length[:5]))
     print("\n")
 
 
 def generate_edgelist(comparable_graphs):
-    nx.write_edgelist(comparable_graphs[0], "outER.csv", delimiter=";")
-    nx.write_edgelist(comparable_graphs[1], "outBA.csv", delimiter=";")
+    nx.write_edgelist(comparable_graphs[0], "outERdefinitivo.csv", delimiter=";")
+    nx.write_edgelist(comparable_graphs[1], "outBAdefinitivo.csv", delimiter=";")
 
 
 def get_coeff_from_net(graph):

@@ -54,9 +54,8 @@ def get_demon(graph):
     return communities
 
 
-def print_results(clique, girv_part, label_part, louv_part, demon_part):
+def print_results(clique, label_part, louv_part, demon_part):
     print("K-Clique partitions: " + str(clique))
-    print("Girvan-Newman partitions: " + str(girv_part))
     print("Label Propagation partitions: " + str(label_part))
     print("Louvain partitions: " + str(louv_part))
     print("Demon partitions: " + str(demon_part))
@@ -68,31 +67,54 @@ def get_partition_quality(graph, partition):
 
 
 def run_community_discovery_task(graph):
-    girv_part = get_girvan_newman(graph, 5)
-    json.dump(girv_part, open("girvan.json", 'w'))
-
     clique_part = get_k_clique(graph, 3)
-    json.dump(girv_part, open("clique.json", 'w'))
+    json.dump(clique_part, open("clique.json", 'w'))
 
     label_part = get_label_prop(graph)
-    json.dump(girv_part, open("labelpart.json", 'w'))
+    json.dump(label_part, open("labelpart.json", 'w'))
 
     louv_part = get_louvain(graph)
-    json.dump(girv_part, open("louvain.json", 'w'))
+    json.dump(louv_part, open("louvain.json", 'w'))
 
     demon_part = get_demon(graph)
-    json.dump(girv_part, open("demon.json", 'w'))
+    json.dump(demon_part, open("demon.json", 'w'))
 
-    print_results(clique_part, girv_part, label_part, louv_part, demon_part)
+    print_results(clique_part, label_part, louv_part, demon_part)
+    run_pquality_test(graph, clique_part, label_part, louv_part, demon_part)
 
+    partition_list = list(((clique_part, "Clique_part"), (label_part, "Label_part"),
+                           (louv_part, "Louv_part"), (demon_part, "Demon_part")))
+
+    run_nf1_evaluation(partition_list)
+
+    return partition_list
+
+
+def run_nf1_evaluation(partition_list):
+    for partition in partition_list:
+        _partition_list_copy = partition_list.copy()
+        _partition_list_copy.remove(partition)
+        index = partition_list.index([partition][0])
+
+        for comparable_partition in _partition_list_copy[index:]:
+            nf = NF1(partition[0], comparable_partition[0])
+            res = nf.summary()
+
+            print(f"Comparison between {partition[1]} and {comparable_partition[1]}:")
+            print(res["scores"])
+            print("____________________________________________________")
+
+            # print("Details:")
+            # print("\n")
+            # print(res["details"])
+            # print("____________________________________________________")
+            # print("\n")
+
+
+def run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part):
     print("\n")
     print("Clique Evaluation")
     get_partition_quality(graph_ba, clique_part)
-    print("____________________________________________________________")
-
-    print("\n")
-    print("Girvan-Newman Evaluation")
-    get_partition_quality(graph_ba, girv_part)
     print("____________________________________________________________")
 
     print("\n")
