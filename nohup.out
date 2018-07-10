@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "data_elaboration/data_retrieval/get_data.py", line 6, in <module>
-    from data_elaboration.data_retrieval.data_structures import Repo, CustomJsonEncoder
-ModuleNotFoundError: No module named 'data_elaboration'
