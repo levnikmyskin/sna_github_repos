@@ -22,9 +22,9 @@ def run_graph_creation_and_analysis():
     degree_centrality, edge_bet_centrality = run_analytical_task(graph_crawled)
     # run_tie_stregth_analysis(graph_crawled, degree_centrality, edge_bet_centrality)
     #
-    # nodes, p_er, m_ba = get_coeff_from_net(graph_crawled)
-    # graph_er, graph_ba = generate_comparable_graphs(nodes, p_er, m_ba)
-    # comparable_graph_list = list((graph_er, graph_ba))
+    nodes, p_er, m_ba = get_coeff_from_net(graph_crawled)
+    graph_er, graph_ba = generate_comparable_graphs(nodes, p_er, m_ba)
+    comparable_graph_list = list((graph_er, graph_ba))
     #
     # for graph in comparable_graph_list:
     #     print("____________________________________________________________________________________")
@@ -32,7 +32,7 @@ def run_graph_creation_and_analysis():
     #     run_tie_stregth_analysis(graph, degree_centrality, edge_bet_centrality)
     #
     # # genera file json che descriva il network
-    # # generate_edgelist(comparable_graph_list)
+    generate_edgelist(comparable_graph_list)
     #
     # return graph_crawled, graph_er, graph_ba
 

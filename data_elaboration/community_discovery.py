@@ -111,24 +111,24 @@ def run_nf1_evaluation(partition_list):
             # print("\n")
 
 
-def run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part):
+def run_pquality_test(graph, clique_part, label_part, louv_part, demon_part):
     print("\n")
     print("Clique Evaluation")
-    get_partition_quality(graph_ba, clique_part)
+    # get_partition_quality(graph, clique_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Label Propagation Evaluation")
-    get_partition_quality(graph_ba, label_part)
+    get_partition_quality(graph, label_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Louvain Evaluation")
-    get_partition_quality(graph_ba, louv_part)
+    get_partition_quality(graph, louv_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Demon Evaluation")
-    get_partition_quality(graph_ba, demon_part)
+    get_partition_quality(graph, demon_part)
     print("____________________________________________________________")
 
