@@ -1,3 +1,4 @@
+import networkx as nx
 from networkx.algorithms import community
 from networkx.algorithms.community import k_clique_communities
 from community import community_louvain
@@ -23,7 +24,6 @@ def get_k_clique(graph, k):
     return clique
 
 
-# TODO: capire differenza fra due modelli label_prop
 def get_label_prop(graph):
     # comm_generator = community.label_propagation_communities(graph)
     comm_generator = community.asyn_lpa_communities(graph)
@@ -33,7 +33,7 @@ def get_label_prop(graph):
 
 
 def get_louvain(graph):
-    partition = community_louvain.best_partition(graph, weight="weight")
+    partition = community_louvain.best_partition(graph)
 
     list_nodes = list()
     for community in set(partition.values()):
@@ -48,7 +48,7 @@ def get_louvain(graph):
 
 def get_demon(graph):
     dm = d.Demon(graph=graph, epsilon=0.25, min_community_size=3)
-    # TODO: ma questa loading bar vorrei toglierla ma non ho voglia di cercare come...
+    # TODO: boh ma che cazzo è sta barra io non la voglio lol
     communities = dm.execute()
 
     return communities
@@ -114,22 +114,21 @@ def run_nf1_evaluation(partition_list):
 def run_pquality_test(graph, clique_part, girv_part, label_part, louv_part, demon_part):
     print("\n")
     print("Clique Evaluation")
-    get_partition_quality(graph, clique_part)
+    get_partition_quality(graph_ba, clique_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Label Propagation Evaluation")
-    get_partition_quality(graph, label_part)
+    get_partition_quality(graph_ba, label_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Louvain Evaluation")
-    get_partition_quality(graph, louv_part)
+    get_partition_quality(graph_ba, louv_part)
     print("____________________________________________________________")
 
     print("\n")
     print("Demon Evaluation")
-    get_partition_quality(graph, demon_part)
+    get_partition_quality(graph_ba, demon_part)
     print("____________________________________________________________")
-
 
