@@ -94,3 +94,11 @@ def get_csv_from_json(json_file):
     # elaborate_csvEDGES_for_gephi(repo_dict)
     # elaborate_csvNODES_for_gephi(user_language_dict)
 
+
+def convert_merged_json_to_csv():
+    with open("merged_edgelist.csv", "w", newline="") as csvfile:
+        writer = csv.writer(csvfile, delimiter=";", quotechar="|", quoting=csv.QUOTE_MINIMAL)
+        data = json.load(open("merged.json", "r"))
+        for user, collab_list in data.items():
+            for collaborator in collab_list:
+                writer.writerow([user, collaborator[0], collaborator[1], collaborator[2]])
