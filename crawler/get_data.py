@@ -60,8 +60,8 @@ def get_repos_info(repos_dic: Dict):
     return repos_dic['name'], repos_dic['language']
 
 
-# Appends to user_dict five_contributors of the repo repo_name
-# It finally enqueues every contributor in a queue and returns this queue
+# Aggiunge a user_dict i five_contributors della repo repo_name
+# Infine mette in una coda ogni contributore e la ritorna
 def save_user_and_enqueue_it(five_contributors, repo_name, language, user_dict):
     if five_contributors is None: 
         return
@@ -82,7 +82,7 @@ def save_data(data, file):
         q.write(str(queue))
 
 
-# For every user u in the queue, it saves u's contributors
+# Per ogni utente u nella coda, ne salva i contributori
 def save_user_queue_contributors(queue, user_dict):
     queue_copy = queue.copy()
     queue.clear()
@@ -101,7 +101,6 @@ def collect_data_on_user_repos(user, repos_data, user_dict):
         if not repo_contributors:
             continue
 
-        # chiamo funzione run_from_data che inserisce utenti/oggetti Repo in user_dict
         save_user_and_enqueue_it(get_first_five_contributors(repo_contributors), repo[0], repo[1], user_dict)
 
 
