@@ -1,0 +1,12 @@
+[package]
+name = "networkxrust"
+version = "0.1.0"
+authors = ["alessio <alessiomolinar@gmail.com>"]
+
+[lib]
+name = "networkxrust"
+crate-type = ["cdylib"]
+
+[dependencies.pyo3]
+version = "0.2"
+features = ["extension-module"]
