@@ -1,6 +1,5 @@
 import networkx as nx
 
-# TODO: boh, magari implementare riomzione a RANDOM per confronto....
 
 def run_tie_stregth_analysis(graph, degree_centrality, edge_bet_centrality):
     print("_____________________________________________________________________")

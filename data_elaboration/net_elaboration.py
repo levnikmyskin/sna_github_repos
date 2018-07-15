@@ -1,6 +1,5 @@
 import json
 import csv
-import networkx as nx
 
 
 def get_user_language_dict(json_file):
@@ -91,8 +90,6 @@ def get_csv_from_json(json_file):
     user_language_dict = get_user_language_dict(data)
     repo_dict = associate_users_to_repos(data, user_language_dict)
     elaborate_and_save_edgelist(repo_dict)
-    # elaborate_csvEDGES_for_gephi(repo_dict)
-    # elaborate_csvNODES_for_gephi(user_language_dict)
 
 
 def convert_merged_json_to_csv():

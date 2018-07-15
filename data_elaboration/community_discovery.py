@@ -1,4 +1,3 @@
-import networkx as nx
 from networkx.algorithms import community
 from networkx.algorithms.community import k_clique_communities
 from community import community_louvain
@@ -25,7 +24,6 @@ def get_k_clique(graph, k):
 
 
 def get_label_prop(graph):
-    # comm_generator = community.label_propagation_communities(graph)
     comm_generator = community.asyn_lpa_communities(graph)
     comm_generator = list(comm_generator)
 
@@ -48,7 +46,6 @@ def get_louvain(graph):
 
 def get_demon(graph):
     dm = d.Demon(graph=graph, epsilon=0.25, min_community_size=3)
-    # TODO: boh ma che cazzo è sta barra io non la voglio lol
     communities = dm.execute()
 
     return communities
@@ -104,12 +101,6 @@ def run_nf1_evaluation(partition_list):
             print(f"Comparison between {partition[1]} and {comparable_partition[1]}:")
             print(res["scores"])
             print("____________________________________________________")
-
-            # print("Details:")
-            # print("\n")
-            # print(res["details"])
-            # print("____________________________________________________")
-            # print("\n")
 
 
 def run_pquality_test(graph, clique_part, label_part, louv_part, demon_part):

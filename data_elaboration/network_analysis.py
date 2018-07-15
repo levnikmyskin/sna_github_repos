@@ -5,7 +5,7 @@ import networkxrust
 from tools import prepare_data_for_rust, chunks_for_rust
 
 
-def incredible_high_speed_diam_computation(shortest_path):
+def diameter_from_shortest_paths(shortest_path):
     diameter_list = set()
     for path_list in shortest_path:
         for path_length in path_list[1].values():
@@ -35,7 +35,6 @@ def create_network_from_csv(csvfile):
     return graph
 
 
-
 def define_max_component(graph):
     cc_comp = max(nx.connected_component_subgraphs(graph), key=len)
 
@@ -49,9 +48,6 @@ def centrality_analysis(graph):
     edge_bet_cen = nx.edge_betweenness_centrality(graph)
     print("CLO CEN")
     clo_cen = nx.closeness_centrality(graph)
-    # print("EIG CEN")
-    # # eig_cen = nx.eigenvector_centrality(graph)
-    # eig_cen = 0
 
     return bet_cen, edge_bet_cen, clo_cen
 
@@ -71,7 +67,6 @@ def get_degree_dist(graph):
 
 
 def generate_comparable_graphs(nodes, probability, min_degree):
-
     graph_ER = nx.fast_gnp_random_graph(nodes, probability, directed=False)
     graph_BA = nx.barabasi_albert_graph(nodes, int(min_degree), seed=None)
 
@@ -100,10 +95,8 @@ def run_analytical_task(graph):
     max_comp_edges = max_comp.size()
     avg_clustering_coef = nx.average_clustering(max_comp)
     bet_cen, edge_bet_cen, clo_cen = centrality_analysis(max_comp)
-    # diameter = nx.diameter(max_comp)
-    # shortest_path_length = nx.shortest_path_length(max_comp)
     shortest_path_length = rust_shortest_path(max_comp)
-    diameter = incredible_high_speed_diam_computation(shortest_path_length)
+    diameter = diameter_from_shortest_paths(shortest_path_length)
 
     print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_edges, degree_centrality, avg_degree,
                   con_components, avg_clustering_coef, bet_cen, edge_bet_cen, clo_cen, shortest_path_length, diameter)
@@ -132,7 +125,6 @@ def print_results(nodes, edges, density, degree_dist, max_comp_nodes, max_comp_e
     print("Betweenness Centrality : " + str(get_sorted_dict(bet_cen)[:1]))
     print("Edge Betweenness Centrality : " + str(get_sorted_dict(edge_bet_cen)[:1]))
     print("Closeness Centrality : " + str(get_sorted_dict(clo_cen)[:1]))
-    # print("Eigenvector Centrality : " + str(get_sorted_dict(eig_cen)[:1]))
     print("Diameter: " + str(diameter))
     print("Shortest Path: " + str(shortest_path_length[:5]))
     print("\n")

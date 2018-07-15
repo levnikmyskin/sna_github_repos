@@ -6,18 +6,6 @@ import ndlib.models.ModelConfig as mc
 from ndlib.viz.mpl.DiffusionTrend import DiffusionTrend
 
 
-def get_epidemic_analysis(graph):
-    # csvfile = "network.csv"
-
-    # graph_ba = nx.barabasi_albert_graph(1000, 5, seed=None)
-    # graph_er = nx.erdos_renyi_graph(1000, 0.1)
-
-    get_epidemic_si(graph)
-    get_epidemic_threshold(graph)
-    get_epidemic_sir(graph)
-    get_epidemic_threshold(graph)
-
-
 def get_epidemic_si(graph, beta, perc_inf, infected_nodes):
     model_si = si.SIModel(graph)
 
@@ -80,10 +68,3 @@ def get_epidemic_sir(graph, beta, gamma, perc_inf, infected_nodes):
     trends_sir = model_sir.build_trends(iterations_sir)
     viz_sir = DiffusionTrend(model_sir, trends_sir)
     viz_sir.plot()
-
-
-# TODO: analizzare differenti modelli di diffusione SI SIR SIS Threshold
-    # TODO: 1)simulare su CRAWLED, ER e BA 2)ripetere variando le condizioni iniziali (settare nodi più importanti infetti)
-    
-    # A common goal for which diffusion simulations are executed is to perform
-    # comparison among different models (or different instantiations of a same model).
