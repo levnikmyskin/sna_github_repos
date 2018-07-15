@@ -14,7 +14,6 @@ def incredible_high_speed_diam_computation(shortest_path):
     return max(diameter_list)
 
 
-
 def rust_shortest_path(graph):
     nodes, adj = prepare_data_for_rust(graph)
 
@@ -27,7 +26,7 @@ def rust_shortest_path(graph):
 
 
 def create_network_from_csv(csvfile):
-    graph = nx.MultiGraph()
+    graph = nx.Graph()
     with open(csvfile, "r") as csvfile:
         data = csv.reader(csvfile, delimiter=";")
         for elem in data:

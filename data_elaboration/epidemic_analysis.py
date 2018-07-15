@@ -5,6 +5,7 @@ import ndlib.models.epidemics.ThresholdModel as thresh
 import ndlib.models.ModelConfig as mc
 from ndlib.viz.mpl.DiffusionTrend import DiffusionTrend
 
+
 def get_epidemic_analysis(graph):
     # csvfile = "network.csv"
 
@@ -17,12 +18,13 @@ def get_epidemic_analysis(graph):
     get_epidemic_threshold(graph)
 
 
-def get_epidemic_si(graph):
+def get_epidemic_si(graph, beta, perc_inf, infected_nodes):
     model_si = si.SIModel(graph)
 
     cfg_si = mc.Configuration()
-    cfg_si.add_model_parameter("beta", 0.01)
-    cfg_si.add_model_parameter("percentage_infected", 0.05)
+    cfg_si.add_model_parameter("beta", beta)
+    cfg_si.add_model_parameter("percentage_infected", perc_inf)
+    cfg_si.add_model_parameter("Infected", infected_nodes)
     model_si.set_initial_status(cfg_si)
 
     iteration_si = model_si.iteration_bunch(50)
@@ -30,13 +32,15 @@ def get_epidemic_si(graph):
     viz_si = DiffusionTrend(model_si, trends_si)
     viz_si.plot()
 
-def get_epidemic_sis(graph):
+
+def get_epidemic_sis(graph, beta, lamb, perc_inf, infected_nodes):
     model_sis = sis.SISModel(graph)
 
     cfg_sis = mc.Configuration()
-    cfg_sis.add_model_parameter("beta", 0.01)
-    cfg_sis.add_model_parameter("lambda", 0.05)
-    cfg_sis.add_model_parameter("percentage_infected", 0.05)
+    cfg_sis.add_model_parameter("beta", beta)
+    cfg_sis.add_model_parameter("lambda", lamb)
+    cfg_sis.add_model_parameter("percentage_infected", perc_inf)
+    cfg_sis.add_model_parameter("Infected", infected_nodes)
     model_sis.set_initial_status(cfg_sis)
 
     iteration_sis = model_sis.iteration_bunch(100)
@@ -45,13 +49,13 @@ def get_epidemic_sis(graph):
     viz_sis.plot()
 
 
-def get_epidemic_threshold(graph):
+def get_epidemic_threshold(graph, perc_inf, threshold, infected_nodes):
     model_threshold = thresh.ThresholdModel(graph)
 
     cfg_threshold = mc.Configuration()
-    cfg_threshold.add_model_parameter("percentage_infected", 0.15)
+    cfg_threshold.add_model_parameter("percentage_infected", perc_inf)
+    cfg_threshold.add_model_parameter("Infected", infected_nodes)
 
-    threshold = 0.25
     for node in graph.nodes():
         cfg_threshold.add_node_configuration("threshold", node, threshold)
     model_threshold.set_initial_status(cfg_threshold)
@@ -62,13 +66,14 @@ def get_epidemic_threshold(graph):
     viz_threshold.plot()
 
 
-def get_epidemic_sir(graph):
+def get_epidemic_sir(graph, beta, gamma, perc_inf, infected_nodes):
     model_sir = sir.SIRModel(graph)
 
     cfg_sir = mc.Configuration()
-    cfg_sir.add_model_parameter("beta", 0.001)  # infection
-    cfg_sir.add_model_parameter("gamma", 0.01)  # recovery
-    cfg_sir.add_model_parameter("percentage_infected", 0.10)
+    cfg_sir.add_model_parameter("beta", beta)  # infection
+    cfg_sir.add_model_parameter("gamma", gamma)  # recovery
+    cfg_sir.add_model_parameter("percentage_infected", perc_inf)
+    cfg_sir.add_model_parameter("Infected", infected_nodes)
     model_sir.set_initial_status(cfg_sir)
 
     iterations_sir = model_sir.iteration_bunch(100, node_status=True)

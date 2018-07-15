@@ -64,6 +64,7 @@ def print_results(clique, label_part, louv_part, demon_part):
 def get_partition_quality(graph, partition):
     results = pquality.pquality_summary(graph, partition)
     print(results["Indexes"])
+    print(results["Modularity"])
 
 
 def run_community_discovery_task(graph):
@@ -114,7 +115,7 @@ def run_nf1_evaluation(partition_list):
 def run_pquality_test(graph, clique_part, label_part, louv_part, demon_part):
     print("\n")
     print("Clique Evaluation")
-    # get_partition_quality(graph, clique_part)
+    get_partition_quality(graph, clique_part)
     print("____________________________________________________________")
 
     print("\n")
